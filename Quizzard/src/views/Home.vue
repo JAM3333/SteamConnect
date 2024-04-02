@@ -104,10 +104,9 @@ export default {
     async Initialize(){
       axios.get(`${apiUrl}/getQuizzes?format=json`,{params: {userid: 1}}).then((response) => {     //{sqlQuery: `select QuizName,QuizImage from Quizzes where UserIDFK=1`}
         this.quizData = response.data;
-        console.log("answer from server::",this.quizData);
+        console.log("Quizzes: ",this.quizData);
       })
       .catch((error) => {
-        console.log("error recieved");
         console.error("Error with the GET request:", error)
       })
     },

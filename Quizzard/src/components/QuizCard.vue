@@ -90,7 +90,7 @@ export default {
     },
     async deleteQuiz() {
       this.loading = true;
-      await AxiosGet(`delete from Questions where QuizIDFK=${this.id} and UserIDFK=1;`);
+      await AxiosGet(`delete from Questions where QuizIDFK=${this.id};`);
       await AxiosGet(`delete from Quizzes where QuizID=${this.id} and UserIDFK=1;`);
       this.initFunction();
       this.popup = false;
