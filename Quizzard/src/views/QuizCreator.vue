@@ -316,8 +316,8 @@ export default {
       this.loadingMessage = "Generating Quiz...";
       this.quizName = this.returnedData.QuizName;    
       this.returnedData.AnswerRating = parseInt(this.answerSelectedButton)
-      this.returnedData.Questions.push(new QuestionClass("Wie backt man Fisch?",1,3,{1:"Salz",2:"Zucker",3:"Backsoda",4:"Wasser"}));   
-      this.returnedData.Questions.push(new QuestionClass("Mit was sollte man Fisch backen?",0,1,{1:"Salz"}));   
+      this.returnedData.Questions.push(new QuestionClass("Wie backt man Fisch?",1,3,["Salz","Zucker","Backsoda","Wasser"]));   
+      this.returnedData.Questions.push(new QuestionClass("Mit was sollte man Fisch backen?",0,1,["Salz"]));   
       //this.uploadFile();
       // await this.APICall(); 
       this.SwitchPage();
