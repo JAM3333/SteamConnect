@@ -12,8 +12,8 @@
   >
     <v-img width="15vw" cover :src="image"></v-img>
     <v-toolbar color="primary" class="text-h1" :title="name">
-      <v-btn icon="mdi-play"></v-btn>
-      <v-menu location="end">
+      <v-btn icon="mdi-play" @click="player"></v-btn>
+      <v-menu location="end" v-if="edit==true">
         <template v-slot:activator="{ props }">
           <v-btn icon="mdi-dots-horizontal" v-bind="props"></v-btn>
         </template>
@@ -79,6 +79,11 @@ export default {
       type: String,
       required: true,
     },
+    edit: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data: () => ({
     loading: false,
@@ -87,6 +92,9 @@ export default {
   methods: {
     creator() {
       this.$router.push({ name: "QuizCreatorId", params: { quizID: this.id } });
+    },
+    player() {
+      this.$router.push({ name: "QuizPlayerId", params: { quizID: this.id } });
     },
     async deleteQuiz() {
       this.loading = true;
