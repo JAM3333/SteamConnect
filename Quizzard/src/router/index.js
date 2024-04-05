@@ -29,7 +29,7 @@ const routes = [
       },
       {
         path: '/login',
-        name: 'loginScreen',
+        name: 'Login',
         component: () => import('@/views/loginScreen.vue'),
       },
     ],
