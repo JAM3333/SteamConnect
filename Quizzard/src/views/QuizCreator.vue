@@ -30,6 +30,7 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
               show-size
               name="fileo"
               @change="ReadFiles"
+              accept=".txt,.pdf,.docx,.xlsx"
               ref="fileUpload"
             ></v-file-input>
           </v-card>
@@ -206,6 +207,7 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
 </template>
 
 <script>
+import { loadRouteLocation } from 'vue-router';
 
 export default {
   
@@ -228,6 +230,8 @@ export default {
     sliderText: 8,
     sliderMin: 0,
     sliderMax: 16,
+    fileContent: [],
+    fileContentStr: "",
     panel: [0],
     returnedData: 
       {"QuizName": "Your Quiz Name",
@@ -238,30 +242,37 @@ export default {
   }),
   methods: {
     ReadFiles() {
-      const uploadedFiles = this.$refs.fileUpload.files;
-      if (uploadedFiles.length > 0) {
-        console.log(uploadedFiles[0]);
-        this.fileData = [];
-        for (let i = 0; i < uploadedFiles.length; i++) {
-          var filetype = console.log(uploadedFiles[i].name);
-          var reader = new FileReader();
-          reader.readAsText(uploadedFiles[i]);
-          reader.onload = () => {
-            this.fileData.push([uploadedFiles[i].name, reader.result]);
-          };
-        }
-        console.log(this.fileData);
-      }
-    },
+  const uploadedFiles = this.$refs.fileUpload.files;
+  if (uploadedFiles.length > 0) {
+    this.fileData = []; // Reset fileData for new uploads
+    for (let i = 0; i < uploadedFiles.length; i++) {
+      let file = uploadedFiles[i]; // Use `let` to create a block-scoped variable
+      let reader = new FileReader();
+ 
+      reader.onload = () => {
+        this.fileData.push([file.name, reader.result]);
+        //console.log(reader.result);  Log each file's content after it's read
+        this.fileContent.push(reader.result);
+      };
+ 
+      reader.onerror = (error) => {
+        console.error('Error reading file:', file.name, error);
+      };
+ 
+      reader.readAsText(file);
+    }
+  }
+},
+  
     async APICall(){
        //WICHTIG !!!!!!!!!!
       //console.log(import.meta.env.VITE_API_KEY);
       const openai = new OpenAI({ apiKey: import.meta.env.VITE_API_KEY, dangerouslyAllowBrowser: true });
-
+      const self = this;
       async function main() {
-        this.loadingMessage = "Sending prompt...";
+        //this.loadingMessage = "Sending prompt...";
         const completion = await openai.chat.completions.create({
-          messages: [{ role: "system", content: `Generate a quiz from the attached file and the following instructions: ${this.customInstructions}. Create ${this.sliderText} Text-Questions and ${this.sliderMultipleChoice} Multiple-choice-questions with a difficulty of ${this.difSelectedButton} using the following json format (Example):   {"QuizName": "Name",
+          messages: [{ role: "system", content: `Generate a quiz from the attached content in brackets and the following instructions: ${self.customInstructions}. Content: ${self.fileContentStr}.Create ${self.sliderText} Text-Questions and ${self.sliderMultipleChoice} Multiple-choice-questions with a difficulty of ${self.difSelectedButton} using the following json format (Example):   {"QuizName": "Name",
       "QuizDifficulty": 0, // easy=0; medium=1; difficult=2
       "QuizImage": "image.png",
       "Questions": [
@@ -279,7 +290,7 @@ export default {
         {
           "Question": "Text-Question?",
           "Type": 0, // Text = 0
-          "AnswerRating": ${this.answerSelectedButton}, // always use this with Text-Questions
+          "AnswerRating": ${self.answerSelectedButton}, // always use this with Text-Questions
           "Answers": {
             "1": "Viel Wasser"
           }
@@ -312,27 +323,29 @@ export default {
       });
     },
     async GenerateQuiz(){
-      this.loading = true
-      this.loadingMessage = "Generating Quiz...";
+      this.loading = true;
+      //this.loadingMessage = "Generating Quiz...";
       this.quizName = this.returnedData.QuizName;    
       this.returnedData.AnswerRating = parseInt(this.answerSelectedButton)
       this.returnedData.Questions.push(new QuestionClass("Wie backt man Fisch?",1,3,["Salz","Zucker","Backsoda","Wasser"]));   
       this.returnedData.Questions.push(new QuestionClass("Mit was sollte man Fisch backen?",0,1,["Salz"]));   
+      this.fileContentStr = JSON.stringify(this.fileContent);
+      console.log(this.fileContentStr);        
       //this.uploadFile();
-      // await this.APICall(); 
+      //await this.APICall(); 
       this.SwitchPage();
-      this.loading = false
-      this.loadingMessage = "";
+      this.loading = false;
+      //this.loadingMessage = "";
     },
     async CreateQuiz(){
       if (this.mode==0){
         console.log(this.returnedData)
         this.loading = true;
-        this.loadingMessage = "Creating Quiz...";
+        //this.loadingMessage = "Creating Quiz...";
         var insertData = await AxiosGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${this.public},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
         //var insertData = await this.ApiGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
         for (let i=0;i<this.returnedData.Questions.length;i++){
-          this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
+          //this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
           this.returnedData.Questions[i].AnswerRating
           await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].Type},${this.returnedData.Questions[i].AnswerRating},'${this.returnedData.Questions[i].Answers}');`)
         } 
@@ -341,11 +354,11 @@ export default {
       } else {
         console.log(this.returnedData)
         this.loading = true;
-        this.loadingMessage = "Creating Quiz...";
+        //this.loadingMessage = "Creating Quiz...";
         var insertData = await AxiosGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${this.public},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
         //var insertData = await this.ApiGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
         for (let i=0;i<this.returnedData.Questions.length;i++){
-          this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
+          //this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
           this.returnedData.Questions[i].AnswerRating
           await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].Type},${this.returnedData.Questions[i].AnswerRating},'${this.returnedData.Questions[i].Answers}');`)
         } 
