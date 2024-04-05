@@ -19,8 +19,9 @@ const customTheme = {
     third: '#393939',
     button: '#07B5FF',
     buttonSecond: '#41455D',
+    buttonThird: `#933`,
     backgroundMain: '#4D4D4D',
-    background: '#3E3E3E', // If not using lighten/darken, use base to return hex
+    background: '#3e3e3ed5', // If not using lighten/darken, use base to return hex
   }
 }
 

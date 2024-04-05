@@ -7,6 +7,11 @@ const routes = [
     name: 'QuizCreatorId',
     component: () => import('../views/QuizCreator.vue')
   },
+  {    
+    path: '/quizplayer/:quizID', // ":userId" is a route parametername: 'User',
+    name: 'QuizPlayerId',
+    component: () => import('../views/QuizPlayer.vue')
+  },
   {
     path: '/',
     redirect: '/home',
@@ -21,6 +26,11 @@ const routes = [
         path: '/quizcreator',
         name: 'QuizCreator',
         component: () => import('@/views/QuizCreator.vue'),
+      },
+      {
+        path: '/discover',
+        name: 'Discover',
+        component: () => import('@/views/Discover.vue'),
       },
       {
         path: '/testing',

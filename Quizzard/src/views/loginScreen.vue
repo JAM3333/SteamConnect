@@ -79,7 +79,7 @@
 
 </template>
  
-<style>
+<style scoped>
    p:hover {
       color: #07B5FF;
       cursor: pointer;
@@ -89,7 +89,7 @@
    } 
 
    #Background {
-      background: url('../assets/bg_login.jpg') no-repeat center center fixed !important;
+      background: url('../assets/bg_login_modified.jpg') no-repeat center center fixed !important;
    }        
 </style>
  <script>
