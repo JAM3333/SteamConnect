@@ -90,7 +90,7 @@ export default {
   }),
   methods: {
     async Initialize(){
-      await AxiosGet(`select QuizName,QuizID,QuizImage from Quizzes where Public=1;`)
+      this.quizData = await AxiosGet(`select QuizName,QuizID,QuizImage from Quizzes where Public=1;`)
     }
   }
 };

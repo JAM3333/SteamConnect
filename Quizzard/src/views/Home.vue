@@ -8,10 +8,15 @@
     <v-main id="Background" color="background" class="d-flex align-center justify-center ga-8 mt-20 flex-column " height="100vh">
       <div class="d-flex align-center justify-space-between">
         <v-card width="34vw"  id="BgTransparent" height="40vh" class="d-flex align-center flex-column mr-8" elevation="12">
-          <v-toolbar color="primary" class="text-h1" title="Recommendation 1"></v-toolbar>
+          <v-toolbar color="primary" class="text-h1" title="Create Quizzes!"></v-toolbar>
+          <p>With just a few clicks, you can craft captivating quizzes that captivate and challenge your audience. Whether you're a teacher, marketer, or quiz enthusiast, our user-friendly interface empowers you to design custom quizzes tailored to your specific needs. From multiple-choice to true/false, unleash your creativity and watch as your quizzes come to life, sparking curiosity and fostering learning. Join us today and embark on a journey of interactive discovery!</p>
+          <v-btn prepend-icon="mdi-plus-circle-outline" color="button" :to="{path: '/quizCreator'}">Create Quizzes</v-btn>
         </v-card>
         <v-card width="34vw" id="BgTransparent" height="40vh" class="d-flex align-center flex-column" elevation="12">
-          <v-toolbar color="primary" title="Recommendation 2"></v-toolbar>
+          <v-toolbar color="primary" title="Browse Quizzes!"></v-toolbar>
+          <p>Step into the virtual library of quizzes! Dive into a world where curiosity meets knowledge, where every click opens a new door to discovery. With a plethora of topics at your fingertips, from history to pop culture, science to literature, the possibilities are endless. Browse through shelves lined with quizzes designed to challenge, entertain, and enlighten.</p>
+          <v-btn prepend-icon="mdi-magnify" color="button" :to="{path: '/discover'}">Discover</v-btn>
+
         </v-card>
     </div>
     <div class="d-flex align-center justify-center ga-8">
@@ -42,6 +47,7 @@
                       :name="item.raw.QuizName"
                       :image="item.raw.QuizImage"
                       :id="item.raw.QuizID"
+                      :edit=true
                     ></QuizCard>
                   </v-col>
                 </v-row>
@@ -104,10 +110,9 @@ export default {
     async Initialize(){
       axios.get(`${apiUrl}/getQuizzes?format=json`,{params: {userid: 1}}).then((response) => {     //{sqlQuery: `select QuizName,QuizImage from Quizzes where UserIDFK=1`}
         this.quizData = response.data;
-        console.log("answer from server::",this.quizData);
+        console.log("Quizzes: ",this.quizData);
       })
       .catch((error) => {
-        console.log("error recieved");
         console.error("Error with the GET request:", error)
       })
     },

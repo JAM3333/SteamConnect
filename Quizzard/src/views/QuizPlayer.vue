@@ -11,157 +11,7 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
   <v-app id="Background">
     <SideBar></SideBar>
     <v-main class="d-flex align-center justify-center">
-      <v-card width="80vw" height="fit-content" class="d-flex align-center flex-column" id="quizCreate" elevation="12">
-        <v-toolbar color="primary" title="Create your Quiz"></v-toolbar>
-        <v-container width="75vw" height="fit-content" class="d-flex align-center flex-column">
-          <v-card width="75vw" outlined color="transparent" class="mt-5 mb-4">
-            <v-toolbar
-              class="text-medium-emphasis font-weight-light"
-              color="primary"
-              title="Upload your files"
-            ></v-toolbar>
-            
-            <v-file-input
-              class="mt-4"
-              clearable
-              label="File input"
-              variant="outlined"
-              multiple
-              show-size
-              name="fileo"
-              @change="ReadFiles"
-              accept=".txt,.pdf,.docx,.xlsx"
-              ref="fileUpload"
-            ></v-file-input>
-          </v-card>
-          <v-expansion-panels v-model="panel" style="min-width: 75vw">
-            <v-expansion-panel expand title="Quiz Options"  color="primary">
-              <v-expansion-panel-text :style="{background: $vuetify.theme.themes.background}">
-                <v-card class="pa-4 d-flex align-center">
-                  <span class="text-medium-emphasis ms-1 font-weight-light">
-                    Quiz Difficulty
-                  </span>
-
-                  <v-spacer></v-spacer>
-
-                  <v-btn-toggle
-                    rounded="4"
-                    color="button"
-                    v-model="difSelectedButton"
-                    group
-                    mandatory
-                  >
-                    <v-btn value="easy"> EASY </v-btn>
-
-                    <v-btn value="medium"> MEDIUM </v-btn>
-
-                    <v-btn value="difficult"> DIFFICULT </v-btn>
-                  </v-btn-toggle>
-                </v-card>
-                <v-card class="pa-4 d-flex align-center fit-content">
-                  <span class="text-medium-emphasis ms-1 font-weight-light">
-                    Question Count
-                  </span>
-
-                  <v-spacer></v-spacer>
-
-                  <v-card class="d-flex mr-4  .justify-space-between flex-column" width="20vw">
-                    <v-toolbar
-                      class="text-medium-emphasis font-weight-light"
-                      color="secondary"
-                      title="Multiple Choice"
-                    ></v-toolbar>
-                    <v-slider
-                      v-model="sliderMultipleChoice"
-                      :max="sliderMax"
-                      :min="sliderMin"
-                      :step="1"
-                      class="pl-2"
-                      hide-details
-                    >
-                      <template v-slot:append>
-                        <v-text-field
-                          v-model="sliderMultipleChoice"
-                          hide-details
-                          single-line
-                          :max="sliderMax"
-                          :min="sliderMin"
-                          :step="1"
-                          density="compact"
-                          type="number"
-                          style="width: 5vw"
-                        ></v-text-field>
-                      </template>
-                    </v-slider>                  
-                  </v-card>     
-                  <v-card class="d-flex mr-4  .justify-space-between flex-column" width="20vw">
-                    <v-toolbar
-                      class="text-medium-emphasis font-weight-light"
-                      color="secondary"
-                      title="Text"
-                    ></v-toolbar>
-                    <v-slider
-                      v-model="sliderText"
-                      :max="sliderMax"
-                      :min="sliderMin"
-                      :step="1"
-                      class="pl-2"
-                      hide-details
-                    >
-                      <template v-slot:append>
-                        <v-text-field
-                          v-model="sliderText"
-                          hide-details
-                          single-line
-                          :max="sliderMax"
-                          :min="sliderMin"
-                          :step="1"
-                          density="compact"
-                          type="number"
-                          style="width: 5vw"
-                        ></v-text-field>
-                      </template>
-                    </v-slider>                  
-                  </v-card>           
-                </v-card>
-                <v-card class="pa-4 d-flex align-center">
-                  <span class="text-medium-emphasis ms-1 font-weight-light">
-                    Answer Rating
-                  </span>
-
-                  <v-spacer></v-spacer>
-
-                  <v-btn-toggle
-                    rounded="4"
-                    color="button"
-                    v-model="answerSelectedButton"
-                    group
-                    mandatory
-                  >
-                    <v-btn value=0> Content (AI) </v-btn>
-
-                    <v-btn value=1> Exact (Wording) </v-btn>
-                  </v-btn-toggle>
-                </v-card>
-              </v-expansion-panel-text>
-            </v-expansion-panel>
-            <v-expansion-panel
-              expand
-              title="Custom Instructions"
-              color="primary"
-            >
-              <v-expansion-panel-text>
-                <v-textarea label="Your instructions"></v-textarea>
-              </v-expansion-panel-text>
-            </v-expansion-panel>
-          </v-expansion-panels>
-
-          <v-btn value="submit" v-on:click="GenerateQuiz"   :disabled="loading" :loading="loading" class="mt-4 mb-2 text-h3" height="auto" color="button">
-            Generate Quiz
-          </v-btn>
-        </v-container>
-      </v-card>
-      <v-card width="80vw"  height="fit-content" class="d-none align-center flex-column" id="quizEdit" elevation="12">
+      <v-card width="80vw"  height="fit-content" class="d-flex align-center flex-column" id="quizEdit" elevation="12">
         <v-toolbar color="primary" title="Quiz">  
           <v-text-field
             v-model="returnedData.QuizName"
@@ -207,7 +57,6 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
 </template>
 
 <script>
-import { loadRouteLocation } from 'vue-router';
 
 export default {
   
@@ -230,8 +79,6 @@ export default {
     sliderText: 8,
     sliderMin: 0,
     sliderMax: 16,
-    fileContent: [],
-    fileContentStr: "",
     panel: [0],
     returnedData: 
       {"QuizName": "Your Quiz Name",
@@ -242,37 +89,30 @@ export default {
   }),
   methods: {
     ReadFiles() {
-  const uploadedFiles = this.$refs.fileUpload.files;
-  if (uploadedFiles.length > 0) {
-    this.fileData = []; // Reset fileData for new uploads
-    for (let i = 0; i < uploadedFiles.length; i++) {
-      let file = uploadedFiles[i]; // Use `let` to create a block-scoped variable
-      let reader = new FileReader();
- 
-      reader.onload = () => {
-        this.fileData.push([file.name, reader.result]);
-        //console.log(reader.result);  Log each file's content after it's read
-        this.fileContent.push(reader.result);
-      };
- 
-      reader.onerror = (error) => {
-        console.error('Error reading file:', file.name, error);
-      };
- 
-      reader.readAsText(file);
-    }
-  }
-},
-  
+      const uploadedFiles = this.$refs.fileUpload.files;
+      if (uploadedFiles.length > 0) {
+        console.log(uploadedFiles[0]);
+        this.fileData = [];
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          var filetype = console.log(uploadedFiles[i].name);
+          var reader = new FileReader();
+          reader.readAsText(uploadedFiles[i]);
+          reader.onload = () => {
+            this.fileData.push([uploadedFiles[i].name, reader.result]);
+          };
+        }
+        console.log(this.fileData);
+      }
+    },
     async APICall(){
        //WICHTIG !!!!!!!!!!
       //console.log(import.meta.env.VITE_API_KEY);
       const openai = new OpenAI({ apiKey: import.meta.env.VITE_API_KEY, dangerouslyAllowBrowser: true });
-      const self = this;
+
       async function main() {
-        //this.loadingMessage = "Sending prompt...";
+        this.loadingMessage = "Sending prompt...";
         const completion = await openai.chat.completions.create({
-          messages: [{ role: "system", content: `Generate a quiz from the attached content in brackets and the following instructions: ${self.customInstructions}. Content: ${self.fileContentStr}.Create ${self.sliderText} Text-Questions and ${self.sliderMultipleChoice} Multiple-choice-questions with a difficulty of ${self.difSelectedButton} using the following json format (Example):   {"QuizName": "Name",
+          messages: [{ role: "system", content: `Generate a quiz from the attached file and the following instructions: ${this.customInstructions}. Create ${this.sliderText} Text-Questions and ${this.sliderMultipleChoice} Multiple-choice-questions with a difficulty of ${this.difSelectedButton} using the following json format (Example):   {"QuizName": "Name",
       "QuizDifficulty": 0, // easy=0; medium=1; difficult=2
       "QuizImage": "image.png",
       "Questions": [
@@ -290,7 +130,7 @@ export default {
         {
           "Question": "Text-Question?",
           "Type": 0, // Text = 0
-          "AnswerRating": ${self.answerSelectedButton}, // always use this with Text-Questions
+          "AnswerRating": ${this.answerSelectedButton}, // always use this with Text-Questions
           "Answers": {
             "1": "Viel Wasser"
           }
@@ -323,30 +163,27 @@ export default {
       });
     },
     async GenerateQuiz(){
-      this.loading = true;
-      //this.loadingMessage = "Generating Quiz...";
+      this.loading = true
+      this.loadingMessage = "Generating Quiz...";
       this.quizName = this.returnedData.QuizName;    
       this.returnedData.AnswerRating = parseInt(this.answerSelectedButton)
       this.returnedData.Questions.push(new QuestionClass("Wie backt man Fisch?",1,3,["Salz","Zucker","Backsoda","Wasser"]));   
       this.returnedData.Questions.push(new QuestionClass("Mit was sollte man Fisch backen?",0,1,["Salz"]));   
-      this.fileContentStr = JSON.stringify(this.fileContent);
-      console.log(this.fileContentStr);        
       //this.uploadFile();
-      //await this.APICall(); 
+      // await this.APICall(); 
       this.SwitchPage();
-      this.loading = false;
-      //this.loadingMessage = "";
+      this.loading = false
+      this.loadingMessage = "";
     },
     async CreateQuiz(){
       if (this.mode==0){ // Create Quiz
         this.loading = true;
-        //this.loadingMessage = "Creating Quiz...";
-        var insertData = await AxiosGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${this.public},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
+        this.loadingMessage = "Creating Quiz...";
+        var insertData = await AxiosGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${Number(this.publicValue)},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
         //var insertData = await this.ApiGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
         for (let i=0;i<this.returnedData.Questions.length;i++){
-          //this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
-          this.returnedData.Questions[i].AnswerRating
-          await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].Type},${this.returnedData.Questions[i].AnswerRating},'${this.returnedData.Questions[i].Answers}');`)
+          this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
+          await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].Type},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
         } 
         this.loading = false
         this.$router.push({ name: 'Home'});
@@ -356,8 +193,7 @@ export default {
         await AxiosGet(`update Quizzes SET QuizName = '${this.returnedData.QuizName}',QuizDifficulty=${this.returnedData.QuizDifficulty},Public=${Number(this.publicValue)} where QuizID=${this.quizID};`)
         await AxiosGet(`delete from Questions where QuizIDFK=${this.quizID};`);
         for (let i=0;i<this.returnedData.Questions.length;i++){
-          //this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
-          //this.returnedData.Questions[i].AnswerRating
+          this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
           await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${this.quizID},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].Type},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
         } 
         this.loading = false
