@@ -33,11 +33,6 @@ const routes = [
         component: () => import('@/views/Discover.vue'),
       },
       {
-        path: '/testing',
-        name: 'FunctionalityTest',
-        component: () => import('@/views/FunctionalityTest.vue'),
-      },
-      {
         path: '/login',
         name: 'Login',
         component: () => import('@/views/loginScreen.vue'),
