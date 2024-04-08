@@ -32,7 +32,6 @@ const routes = [
         name: 'Discover',
         component: () => import('@/views/Discover.vue'),
       },
-  
       {
         path: '/login',
         name: 'Login',
