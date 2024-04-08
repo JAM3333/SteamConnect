@@ -32,11 +32,7 @@ const routes = [
         name: 'Discover',
         component: () => import('@/views/Discover.vue'),
       },
-      {
-        path: '/testing',
-        name: 'FunctionalityTest',
-        component: () => import('@/views/FunctionalityTest.vue'),
-      },
+  
       {
         path: '/login',
         name: 'Login',
