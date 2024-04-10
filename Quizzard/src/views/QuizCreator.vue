@@ -243,6 +243,7 @@ export default {
     returnedData: 
       {"QuizName": "Your Quiz Name",
       "QuizDifficulty": 0, // easy=0; medium=1; difficult=2
+      "AnswerRating": 0,
       "QuizImage": "image.png",
       "Questions": []
     },
@@ -279,26 +280,27 @@ export default {
         const completion = await openai.chat.completions.create({
           messages: [{ role: "system", content: `Generate a quiz from the attached content in brackets and the following instructions: ${self.customInstructions}. Content: ${self.fileContentStr}.Create ${self.sliderText} Text-Questions and ${self.sliderMultipleChoice} Multiple-choice-questions with a difficulty of ${self.difSelectedButton} using the following json format (Example):   {"QuizName": "Name",
       "QuizDifficulty": 0, // easy=0; medium=1; difficult=2
+      "AnswerRating": ${self.answerSelectedButton},
       "QuizImage": "image.png",
       "Questions": [
         {
-          "Question": "Multiple-Choice?",
+          "Question": "Multiple-Choice-Frage?",
           "Type": 1, // MultipleChoice = 1
           "AnswerRating": 3, // Richtige Antwort ist Answer 3
           "Answers": [
             "Salz",
             "Zucker",
             "Backsoda",
-            "Wasser"]
+            "Wasser"] // Immer 4 Antworten
           }
         },
         {
-          "Question": "Text-Question?",
+          "Question": "Text-Frage?",
           "Type": 0, // Text = 0
           "AnswerRating": ${self.answerSelectedButton}, // always use this with Text-Questions
           "Answers": [
-            "Viel Wasser"
-          ]
+            "Viel Wasser" 
+          ] // nur eine Antwort
         },
       ]
     }`  }],
@@ -348,12 +350,14 @@ export default {
       if (this.mode==0){ // Create Quiz
         this.loading = true;
         this.loadingMessage = "Creating Quiz...";
-        var insertData = await AxiosGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${this.public},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
+        console.log(this.returnedData.answerRating);
+        console.log(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${Number(this.publicValue)},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
+        var insertData = await AxiosGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${Number(this.publicValue)},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
+        console.log(insertData)
         //var insertData = await this.ApiGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
         for (let i=0;i<this.returnedData.Questions.length;i++){
           this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
-          this.returnedData.Questions[i].AnswerRating
-          await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].Type},${this.returnedData.Questions[i].AnswerRating},'${this.returnedData.Questions[i].Answers}');`)
+          await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].Type},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
         } 
         this.loading = false
         this.$router.push({ name: 'Home'});
@@ -395,6 +399,7 @@ export default {
           this.returnedData.AnswerRating = sqlData.AnswerRating;
           this.returnedData.QuizImage = sqlData.QuizImage;
           sqlData = await AxiosGet( `select * from Questions where QuizIDFK=`+this.quizID);
+          console.log(sqlData)
           for (let i=0;i<sqlData.length;i++){
            // let obj =  {  "Question": sqlData[i].Question,"Type": sqlData[i].QuestionType,"AnswerRating":  sqlData[i].AnswerRating,"Answers": JSON.parse(sqlData[i].Answers)};
             this.returnedData.Questions[i] = new QuestionClass(sqlData[i].Question,sqlData[i].QuestionType,sqlData[i].AnswerRating,JSON.parse(sqlData[i].Answers));

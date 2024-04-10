@@ -6,7 +6,7 @@ export default async function ApiGet(query) {
   await axios
     .get("http://"+import.meta.env.VITE_SERVER_IP+":"+import.meta.env.VITE_SERVER_PORT+"/sql?format=json", { params: { sqlQuery: query } })
     .then((response) => {
-      console.log("answer from server::", response.data);
+      console.log("answer from server:", response.data);
       sqlData = response.data;
     })
     .catch((error) => {
