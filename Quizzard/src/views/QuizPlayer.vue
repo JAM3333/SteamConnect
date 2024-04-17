@@ -46,9 +46,9 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
 </template>
 
 <script>
-
+  import Question from "../classes/QuestionClass.js";
 export default {
-  
+
   mounted(){
     this.Initialize();
    
@@ -71,7 +71,15 @@ export default {
       if(this.$route.params.quizID){
         this.quizID = this.$route.params.quizID;
         this.returnedData.AnswerRating = 0;
+
+        this.returnedData.Questions[0] = new Question("Example Question",0,0,["Your answer here"])
+        this.returnedData.Questions[0].playerAnswer = "";
+        this.returnedData.Questions[1] = new Question("Example Question",1,2,["Your answer here","More","Idk","Something"])
+        this.returnedData.Questions[1].playerAnswer = "";
+        console.log(this.returnedData)
+
         var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID} and UserIDFK=1`);
+
         if (sqlData[0].UserIDFK == 1){
           sqlData = sqlData[0]
           this.returnedData.QuizName = sqlData.QuizName;
@@ -79,15 +87,17 @@ export default {
           this.returnedData.AnswerRating = sqlData.AnswerRating;
           this.returnedData.QuizImage = sqlData.QuizImage;
           sqlData = await AxiosGet( `select * from Questions where QuizIDFK=`+this.quizID);
+
           for (let i=0;i<sqlData.length;i++){
            // let obj =  {  "Question": sqlData[i].Question,"Type": sqlData[i].QuestionType,"AnswerRating":  sqlData[i].AnswerRating,"Answers": JSON.parse(sqlData[i].Answers)};
             this.returnedData.Questions[i] = new QuestionClass(sqlData[i].Question,sqlData[i].QuestionType,sqlData[i].AnswerRating,JSON.parse(sqlData[i].Answers));
             this.returnedData.Questions[i].playerAnswer = "";
           }
         } else {
+          
           this.$router.push({ name: 'Home'});
         }
-        console.log(this.returnedData)
+        
         this.update = true;
         this.update = false;
       }
