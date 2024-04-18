@@ -26,10 +26,10 @@
           class="d-flex flex-wrap flex-row justify-space-between"
           style="height: fit-content;"
         >
-          <v-btn class="pt-4 pb-4" value:1> {{answers[0]}} </v-btn>
-          <v-btn class="pt-4 pb-4" value:2> {{answers[1]}} </v-btn>
-          <v-btn class="pt-4 pb-4" value:3> {{answers[2]}} </v-btn>
-          <v-btn class="pt-4 pb-4" value:4> {{answers[3]}} </v-btn> 
+          <v-btn class="pt-4 pb-4" value:0> {{answers[0]}} </v-btn>
+          <v-btn class="pt-4 pb-4" value:1> {{answers[1]}} </v-btn>
+          <v-btn class="pt-4 pb-4" value:2> {{answers[2]}} </v-btn>
+          <v-btn class="pt-4 pb-4" value:3> {{answers[3]}} </v-btn> 
         </v-btn-toggle>
       </div>
     </v-expansion-panel-text>
@@ -68,6 +68,8 @@ export default {
   mounted(){
     if (this.type == 1){
       this.playerAnswerNew = 0
+    } else {
+      this.playerAnswerNew = ""
     }
   },
   data: () => ({

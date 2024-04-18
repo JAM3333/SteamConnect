@@ -278,31 +278,32 @@ export default {
       async function main() {
         self.loadingMessage = "Sending prompt...";
         const completion = await openai.chat.completions.create({
-          messages: [{ role: "system", content: `Generate a quiz from the attached content in brackets and the following instructions: ${self.customInstructions}. Content: ${self.fileContentStr}.Create ${self.sliderText} Text-Questions and ${self.sliderMultipleChoice} Multiple-choice-questions with a difficulty of ${self.difSelectedButton} using the following json format (Example):   {"QuizName": "Name",
+          messages: [{ role: "system", content: `Generate a quiz from the attached content in brackets and the following instructions: ${self.customInstructions}. Content: ${self.fileContentStr}.Create exactly ${self.sliderText} Text-Questions and ${self.sliderMultipleChoice} Multiple-choice-questions with a difficulty of ${self.difSelectedButton} using the following json format (Example):   {"QuizName": "Name",
       "QuizDifficulty": 0, // easy=0; medium=1; difficult=2
       "AnswerRating": ${self.answerSelectedButton},
       "QuizImage": "image.png",
       "Questions": [
         {
-          "Question": "Multiple-Choice-Frage?",
+          "Question": "Multiple-Choice-Question 1?",
           "Type": 1, // MultipleChoice = 1
-          "AnswerRating": 3, // Richtige Antwort ist Answer 3
+          "AnswerRating": 3, // Index of right answer - also mark the correct answer in the Answers section
           "Answers": [
-            "Salz",
-            "Zucker",
-            "Backsoda",
-            "Wasser"] // Immer 4 Antworten
+            "Answer1",
+            "Answer2",
+            "Answer3",
+            "Answer4"
+            ] // Always array with length = 4
           }
-        },
+        }, // ${self.sliderMultipleChoice} Multiple-choice-Question-Objects (questions with type=1 and 4 answers)
         {
-          "Question": "Text-Frage?",
+          "Question": "Text-Question 1?",
           "Type": 0, // Text = 0
           "AnswerRating": ${self.answerSelectedButton}, // always use this with Text-Questions
           "Answers": [
-            "Viel Wasser" 
-          ] // nur eine Antwort
-        },
-      ]
+            "Answer" 
+          ] // Always array with length = 1
+        }, // ${self.sliderText} Text-Question-Objects (questions with type=0 and 1 answer)
+      ] // It is crucial to have the right ammount of Multiple Choice and Text Questions as requested (${self.sliderMultipleChoice} + ${self.sliderText})
     }`  }],
           model: "gpt-3.5-turbo",
       });
@@ -357,6 +358,7 @@ export default {
         //var insertData = await this.ApiGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
         for (let i=0;i<this.returnedData.Questions.length;i++){
           this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
+          console.log(i)
           await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].Type},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
         } 
         this.loading = false

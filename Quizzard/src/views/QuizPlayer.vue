@@ -58,6 +58,7 @@ export default {
     loading: false,
     update: false,
     quizID: -1,
+    rating: 0,
     panel: [0],
     returnedData: 
       {"QuizName": "Your Quiz Name",
@@ -71,7 +72,6 @@ export default {
       if(this.$route.params.quizID){
         this.quizID = this.$route.params.quizID;
         this.returnedData.AnswerRating = 0;
-
         this.returnedData.Questions[0] = new Question("Example Question",0,0,["Your answer here"])
         this.returnedData.Questions[0].playerAnswer = "";
         this.returnedData.Questions[1] = new Question("Example Question",1,2,["Your answer here","More","Idk","Something"])
@@ -103,7 +103,15 @@ export default {
       }
     },
     SubmitAnswers(){
-      console.log(this.returnedData)
+      let plrRating = 0
+      this.returnedData.Questions.forEach(function(question){
+        if(question.type == 1){
+          if(question.AnswerRating==question.playerAnswer){
+            plrRating += 1
+          }
+        }
+      })
+      console.log(plrRating +'/'+this.returnedData.Questions.length)
     },
     async ReturnAnswerData(index,playerAnswer){
       this.returnedData.Questions[index].playerAnswer = playerAnswer;
