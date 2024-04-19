@@ -13,8 +13,10 @@
     "@mdi/font": "7.0.96",
     "axios": "^1.6.5",
     "core-js": "^3.29.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
+    "fs": "^0.0.1-security",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.7.0",
     "office-text-extractor": "^3.0.2",
@@ -24,7 +26,8 @@
     "tunnel-ssh": "^5.1.2",
     "vue": "^3.2.0",
     "vue-router": "^4.0.0",
-    "vuetify": "^3.0.0"
+    "vuetify": "^3.0.0",
+    "vuex": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

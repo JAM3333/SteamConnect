@@ -8,7 +8,8 @@
                 </v-btn-toggle> 
 
                 <!-- LOGIN -->
-                <form v-if="currentPageIsLogin" ref="form" @submit.prevent="login()" style="margin-top: 60px;">
+                <form v-if="currentPageIsLogin" ref="form" @submit.prevent="login($event)" style="margin-top: 60px;">
+
                   <v-text-field
                   v-if="currentLoginMethodUsername"
                      v-model="username"
@@ -22,7 +23,7 @@
                   v-if="!currentLoginMethodUsername"
                      v-model="email"
                      name="email"
-                     label="eMail"
+                     label="Email"
                      type="email"
                      placeholder="username"
                      required
@@ -92,6 +93,8 @@
    }        
 </style>
  <script>
+ import { mapMutations } from "vuex";
+ import store from "../store/";
  export default {
    name: "Login",
    data() {
@@ -108,11 +111,46 @@
      };
    },
    methods: {
-     login() {
-       const { username } = this;
-       console.log(username + " logged in");
-       this.$router.push({ path: '/home' });
-     },
+      ...mapMutations(["setUser", "setToken"]), // Assuming these are defined in your store
+
+async login(e) {
+  e.preventDefault();
+  try {
+    const response = await fetch("http://localhost:3002/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: this.username,
+        password: this.password,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Login failed with status: ${response.status}`);
+    }
+
+    const { user, token } = await response.json();
+
+    // Commit mutation using Vuex store (assuming `store` is the imported store instance)
+    await store.commit('setUser', user);
+
+    // Optionally commit setToken mutation if needed
+    await store.commit('setToken', token);
+
+    this.$router.push("/home");
+  } catch (error) {
+    console.error("Login error:", error);
+    // Handle login error (e.g., display an error message)
+  }
+},
+
+   //  login() {
+   //    const { username } = this;
+   //    console.log(username + " logged in");
+   //    this.$router.push({ path: '/home' });
+   //  },
      signup() {
        const { username } = this;
        console.log(username + " signed up");
