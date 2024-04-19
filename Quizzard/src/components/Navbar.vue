@@ -24,12 +24,12 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
  export default {
   name: 'Navbar',
   data() {
     return {
       Username: 'fish',
+      loggedIn: false,
     };
   },
   methods: {
@@ -37,13 +37,5 @@ import { mapGetters } from "vuex";
       this.loggedIn = !this.loggedIn;
     },
   },
-  getters: {
-  loggedIn(state) {
-    return !!state.token;
-  },
-  computed: {
-    ...mapGetters(["isLoggedIn"])
-  },
-},
 };
 </script>
