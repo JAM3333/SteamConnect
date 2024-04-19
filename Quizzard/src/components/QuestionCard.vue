@@ -43,7 +43,7 @@
         v-model="answersNew[parseInt(indexAnswer)]"
         @blur="updateAnswerData"
         ></v-text-field> 
-        <v-checkbox v-if="typeNew==1" class="flex-grow-0 ml-2" :value=indexAnswer+1 v-model="answerRatingNew" @input="updateAnswerRating"
+        <v-checkbox v-if="typeNew==1" class="flex-grow-0 ml-2" :value=indexAnswer v-model="answerRatingNew" @input="updateAnswerRating"
         ></v-checkbox>
       </div>
         <v-container class="d-flex align-center justify-center flex-column pt-0 pb-0">
