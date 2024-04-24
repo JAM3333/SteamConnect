@@ -2,7 +2,6 @@
 import SideBar from "../components/Navbar.vue";
 import PlayerCard from "../components/PlayerCard.vue";
 import OpenAI from "openai";
-import axios from 'axios';
 import QuestionClass from "../classes/QuestionClass.js";
 import AxiosGet from "../JavaScript/AxiosGet.js";
 </script>
@@ -17,14 +16,25 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
             {{ returnedData.QuizName }}
           </v-toolbar-title>
         </v-toolbar> 
-        <v-container width="75vw" class="d-flex align-center flex-column">
+        <v-container v-if="playing==0" width="75vw" class="d-flex align-center flex-column">
+          <v-container class="d-flex flex-column align-center justify-center flex-shrink-1"  >
+            <v-container width="fit-content" class="d-flex flex-row align-center justify-center">
+              <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="playing=1" class="mt-4  text-h3" height="auto" color="button">
+                Start Quiz
+              </v-btn>
+            </v-container>
+            <p class="mb-3">{{ loadingMessage }}</p>
+          </v-container>
+        </v-container>      
+        <v-container v-if="playing==1" width="75vw" class="d-flex align-center flex-column">
           <v-card width="75vw"  height="55vh" elevation="0" id="BgTransparent"  class="mt-5 pl-4 pr-4 overflow-y-auto">
             <v-expansion-panels >
               <PlayerCard class="fill-height mt-3" v-for="(item, index) in returnedData.Questions" :key="item.title" cols="auto"
                 :returnAnswerData="ReturnAnswerData"
                 :question="item.Question"
                 :index="index"
-                :type="item.Type"
+                :questionType="item.QuestionType"
+                :answerRating="item.AnswerRating"
                 :answers="item.Answers"
                 :playerAnswer="item.playerAnswer"
               ></PlayerCard>
@@ -34,6 +44,34 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
             <v-container width="fit-content" class="d-flex flex-row align-center justify-center">
               <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="SubmitAnswers" class="mt-4  text-h3" height="auto" color="button">
                 Submit Answers
+              </v-btn>
+            </v-container>
+            <p class="mb-3">{{ loadingMessage }}</p>
+          </v-container>
+        </v-container>         
+        <v-container v-if="playing==2" width="75vw" class="d-flex align-center flex-column">
+          <v-card width="75vw"  height="55vh" elevation="0" id="BgTransparent"  class="mt-5 pl-4 pr-4 overflow-y-auto">
+            <v-expansion-panels >
+              <PlayerCard class="fill-height mt-3" v-for="(item, index) in returnedData.Questions" :key="item.title" cols="auto"
+                :returnAnswerData="ReturnAnswerData"
+                :question="`[ ${item.Points} / 1 ] -- ${item.Question}`"
+                :index="index"
+                :questionType="item.QuestionType"
+                :answers="item.Answers"
+                :answerRating="item.AnswerRating"
+                :playerAnswer="item.playerAnswer"
+                :enabled="false"
+              ></PlayerCard>
+            </v-expansion-panels>
+          </v-card> 
+          <v-container class="d-flex flex-column align-center justify-center flex-shrink-1"  >
+            <h1 class="mb-1">{{ rating }} / {{this.returnedData.Questions.length}} Points</h1>
+            <v-container width="fit-content" class="d-flex flex-row align-center justify-center">
+              <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="SubmitAnswers" class="mt-4 mr-5 text-h3" @click="replay" height="auto" color="buttonsecond">
+                Replay Quiz
+              </v-btn>
+              <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="SubmitAnswers" class="mt-4  text-h3" @click="home" height="auto" color="button">
+                Home
               </v-btn>
             </v-container>
             <p class="mb-3">{{ loadingMessage }}</p>
@@ -57,6 +95,7 @@ export default {
     loadingMessage:"",
     loading: false,
     update: false,
+    playing: 0,
     quizID: -1,
     rating: 0,
     panel: [0],
@@ -72,12 +111,6 @@ export default {
       if(this.$route.params.quizID){
         this.quizID = this.$route.params.quizID;
         this.returnedData.AnswerRating = 0;
-        this.returnedData.Questions[0] = new Question("Example Question",0,0,["Your answer here"])
-        this.returnedData.Questions[0].playerAnswer = "";
-        this.returnedData.Questions[1] = new Question("Example Question",1,2,["Your answer here","More","Idk","Something"])
-        this.returnedData.Questions[1].playerAnswer = "";
-        console.log(this.returnedData)
-
         var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID} and UserIDFK=1`);
 
         if (sqlData[0].UserIDFK == 1){
@@ -91,7 +124,11 @@ export default {
           for (let i=0;i<sqlData.length;i++){
            // let obj =  {  "Question": sqlData[i].Question,"Type": sqlData[i].QuestionType,"AnswerRating":  sqlData[i].AnswerRating,"Answers": JSON.parse(sqlData[i].Answers)};
             this.returnedData.Questions[i] = new QuestionClass(sqlData[i].Question,sqlData[i].QuestionType,sqlData[i].AnswerRating,JSON.parse(sqlData[i].Answers));
-            this.returnedData.Questions[i].playerAnswer = "";
+            if (this.returnedData.Questions[i].QuestionType == 1){
+              this.returnedData.Questions[i].playerAnswer = 0;
+            } else {
+              this.returnedData.Questions[i].playerAnswer = "";
+            }
           }
         } else {
           
@@ -102,20 +139,58 @@ export default {
         this.update = false;
       }
     },
-    SubmitAnswers(){
-      let plrRating = 0
-      this.returnedData.Questions.forEach(function(question){
-        if(question.type == 1){
+    async APICall(question){
+     
+    },
+    async SubmitAnswers(){
+      const self = this;
+      this.returnedData.Questions.forEach(async function(question){
+        if(question.QuestionType == 1){
           if(question.AnswerRating==question.playerAnswer){
-            plrRating += 1
+            self.rating += 1
+            question.Points = 1
+          } else {
+            question.Points = 0
           }
-        }
+        } else {
+          question.Points = 0
+          if(question.AnswerRating == 0){ // content
+
+            if(question.playerAnswer != ""){
+              const openai = new OpenAI({ apiKey: import.meta.env.VITE_API_KEY, dangerouslyAllowBrowser: true });
+              async function main() {
+                const completion = await openai.chat.completions.create({
+                  messages: [{ role: "system", content: `Return 1 if the meaning of "`+question.playerAnswer+`" is similar to/has the same meaning as "`+question.Answers[0]+`". Does the context match? Be very stict about returning 1. If it is not similar return 0`}],
+                  model: "gpt-3.5-turbo",
+                });
+                if (completion.choices[0]) {
+                  console.log(completion.choices[0].message,question.playerAnswer,question.Answers[0]);
+                  self.rating += JSON.parse(completion.choices[0].message.content);
+                  question.Points = JSON.parse(completion.choices[0].message.content);
+                }
+              }
+              await main();
+            }
+          } else { // Exact
+            let plrAnswer = question.playerAnswer
+            if(plrAnswer.toLowerCase() == question.Answers[0].toLowerCase()){
+              self.rating += 1
+              question.Points = 1
+            }
+          }
+        } 
       })
-      console.log(plrRating +'/'+this.returnedData.Questions.length)
+      this.playing = 2
     },
     async ReturnAnswerData(index,playerAnswer){
       this.returnedData.Questions[index].playerAnswer = playerAnswer;
-    }
+    },
+    replay() {
+      window.location.reload()
+    },
+    home() {
+      this.$router.push({ name: "Home"});
+    },
   },
 };
 </script>
