@@ -66,7 +66,6 @@ app.listen(port, () => {
 import express from "express";
 import cors from "cors";
 import mysql from "mysql2";
-import jwt from "jsonwebtoken";
 //const express = require("express");
 //const cors = require("cors");
 //const mysql = require("mysql2");
@@ -93,37 +92,10 @@ app.get("/", (req, res) => {
     if (error) throw error;
     res.json(results);
   });
-  const user = { id: 1, name: "uma victor", username: "uma victor" };
-  const token = jwt.sign(user, process.env.JWT_KEY);
-  res.json({ token, user });
 });
 console.log("gus")
 
-app.post("/login", (req, res) => {
-  const USERNAME = "uma victor";
-  const PASSWORD = "8888";
-  console.log("sus");
-const { username, password } = req.body;
-console.log(req.body);
 
-  if (username === USERNAME && password === PASSWORD) {
-    const user = {
-      id: 1,
-      name: "uma victor",
-      username: "uma victor",
-    };
-    const token = jwt.sign(user, process.env.JWT_KEY);
-    res.json({
-      token,
-      user,
-    });
-  } else {
-    res.status(403);
-    res.json({
-      message: "wrong login information",
-    });
-  }
-});
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
