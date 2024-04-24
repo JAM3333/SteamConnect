@@ -21,7 +21,7 @@
         type="text"
         class="mr-4"
       ></v-text-field>
-      <v-card v-if="type==0" class="d-flex mr-3 align-center">
+      <v-card v-if="questionType==0" class="d-flex mr-3 align-center">
         <v-spacer></v-spacer>
         <v-btn-toggle
           rounded="4"
@@ -87,7 +87,7 @@ export default {
       type: String,
       required: true,
     },
-    type: {
+    questionType: {
       type: Number,
       required: true,
     },
@@ -102,7 +102,7 @@ export default {
   },
   mounted(){
     this.questionNew = this.question;
-    this.typeNew = this.type;
+    this.typeNew = this.questionType;
     this.answerRatingNew = this.answerRating;
     this.answersNew[0] = this.answers[0];
     if (this.answers[1] != undefined) {
@@ -128,7 +128,7 @@ export default {
         this.answersNew[2] = this.answers[2];
         this.answersNew[3] = this.answers[3];
       }
-      this.typeNew = this.type;
+      this.typeNew = this.questionType;
       this.answerRatingNew = parseInt(this.answerRating);
     },
     async updateAnswerRating(){

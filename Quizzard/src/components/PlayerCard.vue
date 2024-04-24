@@ -6,20 +6,28 @@
   <v-expansion-panel
     color="primary"
   >
-    <v-expansion-panel-title> {{ question }}
+    <v-expansion-panel-title>
+      <div  v-if="questionType==0">
+        <v-btn v-if="answerRating==0" value:0 disabled> Content </v-btn>
+        <v-btn v-else value:1 disabled> Exact </v-btn>
+      </div>
+      <v-btn v-else value:1 disabled> Multiple Choice </v-btn>
+
+      <p class="ml-5">{{ question }}</p>
     </v-expansion-panel-title>
     <v-expansion-panel-text>
       <div class="d-flex flex-row justify-space-between" v-for="(item, indexAnswer) in answers">
-        <v-text-field v-if="type==0" class="flex-grow-1"
+        <v-text-field v-if="questionType==0" class="flex-grow-1"
         label="Your Answer"
         v-model="playerAnswerNew"
         @blur="updateAnswerData"
         ></v-text-field> 
-      </div>
+      </div>       
       <div class="d-flex flex-column align-center">
-      <v-btn-toggle v-if="type==1"
+      <v-btn-toggle v-if="questionType==1" 
           rounded="4"
           color="button"
+          :disabled="!this.enabled"
           v-model="playerAnswerNew"
           @click="updateAnswerData"
           mandatory
@@ -52,7 +60,7 @@ export default {
       type: String,
       required: true,
     },
-    type: {
+    questionType: {
       type: Number,
       required: true,
     },
@@ -64,9 +72,18 @@ export default {
       type: Object,
       required: false,
     },
+    answerRating: {
+      type: Number,
+      required: true,
+    },
+    enabled: {
+      type: Boolean,
+      required: false,
+      default: true,
+    }
   },
   mounted(){
-    if (this.type == 1){
+    if (this.questionType == 1){
       this.playerAnswerNew = 0
     } else {
       this.playerAnswerNew = ""
@@ -80,6 +97,7 @@ export default {
     async updateAnswerData(){
       await this.returnAnswerData(this.index,this.playerAnswerNew);
       this.playerAnswerNew = this.playerAnswer;
+
     }
   }
 }
