@@ -132,11 +132,6 @@ import { generateCodeFrame } from "vue/compiler-sfc";
 
       console.log(loginData);
 
-      this.errorMessages = { username: '', password: '' }; // Reset errors
-      this.generalError = '';
-
-      try {
-        const response = await axios.post('/api/login', this.loginData);
          await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/login", loginData)
          .then((response) => {
             console.log("answer from server:", response.data);
@@ -147,32 +142,6 @@ import { generateCodeFrame } from "vue/compiler-sfc";
             console.log("error recieved");
             console.error("Error with the GET request:", error);
          });
-         const token = response.data.token;
-
-         // Redirect or perform other actions upon successful login
-      } catch (error) {
-         if (error.response) {
-            // Handle errors based on the response status code
-            if (error.response.status === 401) {
-            // Specific message for unauthorized access
-            this.generalError = 'Incorrect username or password.';
-            } else if (error.response.status === 400) {
-            // Handling validation errors
-            const errors = error.response.data.errors;
-            this.errorMessages.username = errors.username || '';
-            this.errorMessages.password = errors.password || '';
-            } else {
-            // General API errors
-            this.generalError = 'An error occurred. Please try again later.';
-            }
-         } else if (error.request) {
-            // The request was made but no response was received
-            this.generalError = 'No response from server. Check your network connection.';
-         } else {
-            // Something happened in setting up the request that triggered an error
-            this.generalError = 'Error setting up request.';
-         }
-      }
       },
       signup() {
          const { username } = this;
