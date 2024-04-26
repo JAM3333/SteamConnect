@@ -1,7 +1,7 @@
 class Question {
-    constructor(Question, Type, AnswerRating ,Answers) {
+    constructor(Question, QuestionType, AnswerRating ,Answers) {
         this.Question = Question;
-        this.Type = Type;
+        this.QuestionType = QuestionType;
         this.AnswerRating = AnswerRating;
         this.Answers = Answers
     }

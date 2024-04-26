@@ -184,7 +184,7 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
                 :removeQuestion="RemoveQuestion"
                 :question="item.Question"
                 :index="index"
-                :type="item.Type"
+                :questionType="item.QuestionType"
                 :answerRating="item.AnswerRating"
                 :answers="item.Answers"
               ></QuestionCard>
@@ -235,7 +235,7 @@ export default {
     sliderMultipleChoice: 1,
     sliderText: 3,
     sliderMin: 0,
-    sliderMax: 16,
+    sliderMax: 8,
     fileContent: [],
     fileContentStr: "",
     panel: [0],
@@ -284,7 +284,7 @@ export default {
       "Questions": [
         {
           "Question": "Multiple-Choice-Question 1?",
-          "Type": 1, // MultipleChoice = 1
+          "QuestionType": 1, // MultipleChoice = 1
           "AnswerRating": 3, // Index of right answer - also mark the correct answer in the Answers section
           "Answers": [
             "Answer1",
@@ -296,7 +296,7 @@ export default {
         }, // ${self.sliderMultipleChoice} Multiple-choice-Question-Objects (questions with type=1 and 4 answers)
         {
           "Question": "Text-Question 1?",
-          "Type": 0, // Text = 0
+          "QuestionType": 0, // Text = 0
           "AnswerRating": ${self.answerSelectedButton}, // always use this with Text-Questions
           "Answers": [
             "Answer" 
@@ -351,7 +351,12 @@ async uploadFile() {
       if (this.useAI){
         await this.APICall(); 
       } else {
-        this.returnedData.Questions.push(new Question("Example Question",0,0,["Your answer here"]))
+        for (let i = 0;i<this.sliderMultipleChoice;i++){
+          this.returnedData.Questions.push(new Question("Multiple-Choice-Question",1,0,["","","",""]))
+        };
+        for (let i = 0;i<this.sliderText;i++){
+          this.returnedData.Questions.push(new Question("Text-Question",0,0,[""]))
+        };
       }
       this.SwitchPage();
       this.loading = false;
@@ -369,7 +374,7 @@ async uploadFile() {
         for (let i=0;i<this.returnedData.Questions.length;i++){
           this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
           console.log(i)
-          await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].Type},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
+          await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].QuestionType},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
         } 
         this.loading = false
         this.$router.push({ name: 'Home'});
@@ -381,7 +386,7 @@ async uploadFile() {
         for (let i=0;i<this.returnedData.Questions.length;i++){
           this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
           //this.returnedData.Questions[i].AnswerRating
-          await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${this.quizID},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].Type},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
+          await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${this.quizID},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].QuestionType},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
         } 
         this.loading = false
         this.$router.push({ name: 'Home'});
@@ -404,7 +409,6 @@ async uploadFile() {
         if (sqlData[0].UserIDFK == 1){
           sqlData = sqlData[0]
           this.quizName = sqlData.QuizName;
-          console.log(Boolean(sqlData.Public.data[0]))
           this.publicValue = Boolean(sqlData.Public.data[0]);
           this.returnedData.QuizName = sqlData.QuizName;
           this.returnedData.QuizDifficulty = sqlData.QuizDifficulty;
@@ -413,7 +417,7 @@ async uploadFile() {
           sqlData = await AxiosGet( `select * from Questions where QuizIDFK=`+this.quizID);
           console.log(sqlData)
           for (let i=0;i<sqlData.length;i++){
-           // let obj =  {  "Question": sqlData[i].Question,"Type": sqlData[i].QuestionType,"AnswerRating":  sqlData[i].AnswerRating,"Answers": JSON.parse(sqlData[i].Answers)};
+           // let obj =  {  "Question": sqlData[i].Question,"QuestionType": sqlData[i].QuestionType,"AnswerRating":  sqlData[i].AnswerRating,"Answers": JSON.parse(sqlData[i].Answers)};
             this.returnedData.Questions[i] = new QuestionClass(sqlData[i].Question,sqlData[i].QuestionType,sqlData[i].AnswerRating,JSON.parse(sqlData[i].Answers));
           }
           console.log(this.returnedData.Questions)
@@ -427,12 +431,12 @@ async uploadFile() {
         this.mode = 0;
       };
     },
-    async UpdateQuestion(index,question,answerRating,type){
+    async UpdateQuestion(index,question,answerRating,questionType){
       this.returnedData.Questions[index].Question = question;
       this.returnedData.Questions[index].AnswerRating = answerRating;
-      if (this.returnedData.Questions[index].Type != type){
-        this.returnedData.Questions[index].Type = type;
-        if (type == 0){
+      if (this.returnedData.Questions[index].QuestionType != questionType){
+        this.returnedData.Questions[index].QuestionType = questionType;
+        if (questionType == 0){
           this.returnedData.Questions[index].AnswerRating = parseInt(this.answerSelectedButton);
           this.returnedData.Questions[index].Answers = [this.returnedData.Questions[index].Answers[0]]
         } else {
