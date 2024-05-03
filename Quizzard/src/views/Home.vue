@@ -1,5 +1,6 @@
 <script setup>
   import QuizCard from "../components/QuizCard.vue";
+  import AxiosGet from "../JavaScript/AxiosGet.js";
 </script>
 
 <template>
@@ -105,24 +106,21 @@ export default {
   },
   data: () => ({
     search: '',
-    quizData: [{
-      QuizName: "Default",
-      QuizID: 1,
-      QuizImage:"https://th.bing.com/th/id/OIP.GPFEY6kfgxbsja6gmrW6rwHaE7?rs=1&pid=ImgDetMain"
-    }], 
-    userid: 1,
+    quizData: [], 
   }),
   methods: {
     async Initialize(){
-      axios.get(`${apiUrl}/getQuizzes?format=json`,{params: {userid: await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)}}).then((response) => {     //{sqlQuery: `select QuizName,QuizImage from Quizzes where UserIDFK=1`}
+      var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
+      if (userId[0]){
+        axios.get(`${apiUrl}/getQuizzes?format=json`,{params: {userid: userId[0].UserID}}).then((response) => {     //{sqlQuery: `select QuizName,QuizImage from Quizzes where UserIDFK=1`}
         this.quizData = response.data;
         console.log("Quizzes: ",this.quizData);
       })
       .catch((error) => {
         console.error("Error with the GET request:", error)
       })
+      }
     },
-
   }
 };
 </script>
