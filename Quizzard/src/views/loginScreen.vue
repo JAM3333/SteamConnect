@@ -46,16 +46,16 @@
                <!-- SIGNUP -->
                <form v-if="currentPageIsSignup" ref="form" @submit.prevent="signup()" style="margin-top: 35px;">
                   <v-text-field 
-                     v-model="email"
+                     v-model="formSignup.email"
                      name="email"
-                     label="eMail"
+                     label="Email"
                      type="email"
                      placeholder="email"
                      required
                   ></v-text-field>
 
                   <v-text-field
-                     v-model="username"
+                     v-model="formSignup.username"
                      name="username"
                      label="Username"
                      type="text"
@@ -64,7 +64,7 @@
                   ></v-text-field>
                   
                   <v-text-field
-                     v-model="password"
+                     v-model="formSignup.password"
                      name="password"
                      label="Password"
                      type="password"
@@ -99,6 +99,7 @@
 </style>
  <script>
  import axios from "axios";
+import { onBeforeMount } from "vue";
 import { generateCodeFrame } from "vue/compiler-sfc";
  export default {
    name: "Login",
@@ -124,29 +125,81 @@ import { generateCodeFrame } from "vue/compiler-sfc";
      };
    },
    methods: {
-      async login() {
-      const loginData = {
-         Username: this.formLogin.username,
-         Password: this.formLogin.password
-      };
-
-      console.log(loginData);
-
-         await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/login", loginData)
-         .then((response) => {
-            console.log("answer from server:", response.data);
-            let token = response.data;
-            localStorage.setItem('token', token);
-         })
-         .catch((error) => {
-            console.log("error recieved");
-            console.error("Error with the GET request:", error);
-         });
+      onBeforeMount() {
+         this.loadFunc();
       },
-      signup() {
-         const { username } = this;
-         console.log(username + " signed up");
-         this.$router.push({ path: '/home' });
+      loadFunc() {
+         if (localStorage.token != 0) {
+            this.$router.push({ path: '/home' })
+         }
+         else {}
+      },
+
+      async login() {
+         // LOGIN WITH USERNAME
+         if (this.formLogin.email=='') {
+            const loginData = {
+               Username: this.formLogin.username,
+               Password: this.formLogin.password
+            };
+
+            console.log(loginData);
+
+            await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/login/user", loginData)
+            .then((response) => {
+               console.log("answer from server:", response.data);
+               let token = response.data;
+               localStorage.setItem('token', token);
+               this.$router.push({ path: '/home' });
+            })
+            .catch((error) => {
+               console.log("error recieved");
+               console.error("Error with the GET request:", error);
+            });
+         }
+
+         // LOGIN WITH EMAIL
+         else {
+            const loginData = {
+               Email: this.formLogin.email,
+               Password: this.formLogin.password
+            };
+
+            console.log(loginData);
+
+            await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/login/email", loginData)
+            .then((response) => {
+               console.log("answer from server:", response.data);
+               let token = response.data;
+               localStorage.setItem('token', token);
+               this.$router.push({ path: '/home' });
+            })
+            .catch((error) => {
+               console.log("error recieved");
+               console.error("Error with the GET request:", error);
+            });
+         }
+      },
+      async signup() {
+         const signupData = {
+               Email: this.formSignup.email,
+               Username: this.formSignup.username,
+               Password: this.formSignup.password
+            };
+
+            console.log(signupData);
+
+            await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/signup", signupData)
+            .then((response) => {
+               console.log("answer from server:", response.data);
+               let token = response.data;
+               localStorage.setItem('token', token);
+               this.$router.push({ path: '/home' });
+            })
+            .catch((error) => {
+               console.log("error recieved");
+               console.error("Error with the GET request:", error);
+            });
       },
       pageToSignup() {
          this.currentPageIsLogin = false;
