@@ -19,7 +19,7 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
         <v-container v-if="playing==0" width="75vw" class="d-flex align-center flex-column">
           <v-container class="d-flex flex-column align-center justify-center flex-shrink-1"  >
             <v-container width="fit-content" class="d-flex flex-row align-center justify-center">
-              <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="playing=1" class="mt-4  text-h3" height="auto" color="button">
+              <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="timer" class="mt-4  text-h3" height="auto" color="button">
                 Start Quiz
               </v-btn>
             </v-container>
@@ -93,6 +93,7 @@ export default {
   },
   data: () => ({
     loadingMessage:"",
+    playtime:0,
     loading: false,
     update: false,
     playing: 0,
@@ -142,6 +143,18 @@ export default {
     async APICall(question){
      
     },
+    timer() {
+      this.playing = 1;
+      console.log("timer")
+      const startTime = Date.now();
+
+      let interval = setInterval(function() {
+        this.playtime = Date.now() - startTime ;
+        this.playtime = (this.playtime / 1000).toFixed(1)
+        console.log()
+      }, 100);
+    },
+
     async SubmitAnswers(){
       const self = this;
       this.returnedData.Questions.forEach(async function(question){

@@ -29,7 +29,6 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
               multiple
               show-size
               name="fileo"
-              @change="uploadFile"
               accept=".txt,.pdf,.docx,.xlsx"
               ref="fileUpload"
             ></v-file-input>
@@ -314,7 +313,7 @@ export default {
       }
       await main();
     },
-   uploadFile() {
+async uploadFile() {
   const formData = new FormData();
   const files = this.$refs.fileUpload.files;
 
@@ -322,9 +321,18 @@ export default {
     formData.append('file', files[i]);
   }
 
-  axios.post('http://10.115.2.38:3002/api/Upload', formData)
+  // Füge die UserID im Header hinzu
+  const userId = 10; // Hier die UserID setzen
+  const config = {
+    headers: {
+      'x-user-id': userId
+    }
+  };
+
+  await axios.post('http://10.115.2.38:3002/api/Upload', formData, config)
     .then(response => {
-      console.log(response.data);
+      console.log(JSON.stringify(response.data));
+      this.fileContentStr = JSON.stringify(response.data);
     })
     .catch(error => {
       console.error('Fehler beim Hochladen der Datei:', error);
@@ -332,12 +340,13 @@ export default {
 },
 
 
+
     async GenerateQuiz(){
       this.loading = true;
       this.loadingMessage = "Generating Quiz...";
       this.returnedData.AnswerRating = parseInt(this.answerSelectedButton) 
       this.fileContentStr = JSON.stringify(this.fileContent);
-      //this.uploadFile();
+      await this.uploadFile();
       console.log(this.useAI)
       if (this.useAI){
         await this.APICall(); 
