@@ -114,7 +114,7 @@ export default {
   }),
   methods: {
     async Initialize(){
-      axios.get(`${apiUrl}/getQuizzes?format=json`,{params: {userid: 1}}).then((response) => {     //{sqlQuery: `select QuizName,QuizImage from Quizzes where UserIDFK=1`}
+      axios.get(`${apiUrl}/getQuizzes?format=json`,{params: {userid: await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)}}).then((response) => {     //{sqlQuery: `select QuizName,QuizImage from Quizzes where UserIDFK=1`}
         this.quizData = response.data;
         console.log("Quizzes: ",this.quizData);
       })

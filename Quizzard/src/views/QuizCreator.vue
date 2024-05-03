@@ -248,29 +248,7 @@ export default {
     },
   }),
   methods: {
-    ReadFiles() {
-      const uploadedFiles = this.$refs.fileUpload.files;
-      if (uploadedFiles.length > 0) {
-        this.fileData = []; // Reset fileData for new uploads
-        for (let i = 0; i < uploadedFiles.length; i++) {
-          let file = uploadedFiles[i]; // Use `let` to create a block-scoped variable
-          let reader = new FileReader();
-    
-          reader.onload = () => {
-            this.fileData.push([file.name, reader.result]);
-            //console.log(reader.result);  Log each file's content after it's read
-            this.fileContent.push(reader.result);
-          };
-    
-          reader.onerror = (error) => {
-            console.error('Error reading file:', file.name, error);
-          };
-    
-          reader.readAsText(file);
-        }
-      }
-    },
-  
+
     async APICall(){
       const openai = new OpenAI({ apiKey: import.meta.env.VITE_API_KEY, dangerouslyAllowBrowser: true });
       const self = this;
@@ -321,15 +299,14 @@ async uploadFile() {
     formData.append('file', files[i]);
   }
 
-  // Füge die UserID im Header hinzu
-  const userId = 10; // Hier die UserID setzen
+  const userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`);
   const config = {
     headers: {
       'x-user-id': userId
     }
   };
 
-  await axios.post('http://10.115.2.38:3002/api/Upload', formData, config)
+  await axios.post("http://"+import.meta.env.VITE_SERVER_IP+":"+import.meta.env.VITE_SERVER_PORT+"/api/upload", formData, config)
     .then(response => {
       console.log(JSON.stringify(response.data));
       this.fileContentStr = JSON.stringify(response.data);
@@ -405,8 +382,9 @@ async uploadFile() {
         this.quizID = this.$route.params.quizID;
         this.returnedData.AnswerRating = 0;
         this.SwitchPage();
-        var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID} and UserIDFK=1`);
-        if (sqlData[0].UserIDFK == 1){
+        var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`);
+        var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID} and UserIDFK=`+userId+`;`);
+        if (sqlData[0].UserIDFK == userId){
           sqlData = sqlData[0]
           this.quizName = sqlData.QuizName;
           this.publicValue = Boolean(sqlData.Public.data[0]);
