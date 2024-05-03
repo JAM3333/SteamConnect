@@ -21,7 +21,7 @@ Quizzard is a dynamic quiz generation application utilizing Vuetify, JavaScript,
 
 ### Installation
 
-1. Clone the repository: `git clone https://github.com/yourusername/quizzard.git`
+1. Clone the repository: `git clone https://github.com/yourusername/Quizzard.git`
 2. Install dependencies: `npm install`
 3. Set up MySQL database
 4. Configure the necessary environment variables (see env.txt for an example) and get an API-Key for the OpenAI-API
