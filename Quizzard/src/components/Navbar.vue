@@ -62,6 +62,7 @@ import axios from 'axios';
     logout() {
       localStorage.setItem('token', '')
       this.loggedIn = false;
+      this.$router.push({path: '/home'})
     },
 },
 };
