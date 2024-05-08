@@ -10,7 +10,7 @@
     class="d-flex align-center flex-column ml-8"
     elevation="12"
   >
-    <v-img width="15vw" cover :src="image"></v-img>
+    <v-img width="15vw" cover :src="'http://10.115.2.40:3004'+image"></v-img>
     <v-toolbar color="primary" class="text-h1" :title="name">
       <v-btn icon="mdi-play" @click="player"></v-btn>
       <v-menu location="end" v-if="edit==true">
@@ -89,6 +89,9 @@ export default {
     loading: false,
     popup: false,
   }),
+  mounted(){
+    console.log('http://10.115.2.40:3004'+this.image)
+  },
   methods: {
     creator() {
       this.$router.push({ name: "QuizCreatorId", params: { quizID: this.id } });
@@ -99,7 +102,8 @@ export default {
     async deleteQuiz() {
       this.loading = true;
       await AxiosGet(`delete from Questions where QuizIDFK=${this.id};`);
-      await AxiosGet(`delete from Quizzes where QuizID=${this.id} and UserIDFK=1;`);
+      var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
+      await AxiosGet(`delete from Quizzes where QuizID=${this.id} and UserIDFK=${userId[0].UserID};`);
       this.initFunction();
       this.popup = false;
       this.loading = false;

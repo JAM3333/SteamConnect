@@ -112,29 +112,34 @@ export default {
       if(this.$route.params.quizID){
         this.quizID = this.$route.params.quizID;
         this.returnedData.AnswerRating = 0;
-        var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID} and UserIDFK=1`);
+        var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
+        var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID} and UserIDFK=`+userId[0].UserID+`;`);
+        if (sqlData) {
+          console.log(sqlData[0].UserIDFK, userId[0].UserID)
+          if (sqlData[0].UserIDFK == userId[0].UserID){
+            sqlData = sqlData[0]
+            this.returnedData.QuizName = sqlData.QuizName;
+            this.returnedData.QuizDifficulty = sqlData.QuizDifficulty;
+            this.returnedData.AnswerRating = sqlData.AnswerRating;
+            this.returnedData.QuizImage = sqlData.QuizImage;
+            sqlData = await AxiosGet( `select * from Questions where QuizIDFK=`+this.quizID);
 
-        if (sqlData[0].UserIDFK == 1){
-          sqlData = sqlData[0]
-          this.returnedData.QuizName = sqlData.QuizName;
-          this.returnedData.QuizDifficulty = sqlData.QuizDifficulty;
-          this.returnedData.AnswerRating = sqlData.AnswerRating;
-          this.returnedData.QuizImage = sqlData.QuizImage;
-          sqlData = await AxiosGet( `select * from Questions where QuizIDFK=`+this.quizID);
-
-          for (let i=0;i<sqlData.length;i++){
-           // let obj =  {  "Question": sqlData[i].Question,"Type": sqlData[i].QuestionType,"AnswerRating":  sqlData[i].AnswerRating,"Answers": JSON.parse(sqlData[i].Answers)};
-            this.returnedData.Questions[i] = new QuestionClass(sqlData[i].Question,sqlData[i].QuestionType,sqlData[i].AnswerRating,JSON.parse(sqlData[i].Answers));
-            if (this.returnedData.Questions[i].QuestionType == 1){
-              this.returnedData.Questions[i].playerAnswer = 0;
-            } else {
-              this.returnedData.Questions[i].playerAnswer = "";
+            for (let i=0;i<sqlData.length;i++){
+            // let obj =  {  "Question": sqlData[i].Question,"Type": sqlData[i].QuestionType,"AnswerRating":  sqlData[i].AnswerRating,"Answers": JSON.parse(sqlData[i].Answers)};
+              this.returnedData.Questions[i] = new QuestionClass(sqlData[i].Question,sqlData[i].QuestionType,sqlData[i].AnswerRating,JSON.parse(sqlData[i].Answers));
+              if (this.returnedData.Questions[i].QuestionType == 1){
+                this.returnedData.Questions[i].playerAnswer = 0;
+              } else {
+                this.returnedData.Questions[i].playerAnswer = "";
+              }
             }
+          } else {
+            this.$router.push({ name: 'Home'});
           }
         } else {
-          
           this.$router.push({ name: 'Home'});
         }
+      
         
         this.update = true;
         this.update = false;
@@ -165,6 +170,7 @@ export default {
           } else {
             question.Points = 0
           }
+          question.playerAnswer = question.AnswerRating
         } else {
           question.Points = 0
           if(question.AnswerRating == 0){ // content

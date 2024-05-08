@@ -113,8 +113,8 @@ export default {
       var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
       if (userId[0]){
         axios.get(`${apiUrl}/getQuizzes?format=json`,{params: {userid: userId[0].UserID}}).then((response) => {     //{sqlQuery: `select QuizName,QuizImage from Quizzes where UserIDFK=1`}
+        //response.data.QuizImage = apiUrl+response.data.QuizImage
         this.quizData = response.data;
-        console.log("Quizzes: ",this.quizData);
       })
       .catch((error) => {
         console.error("Error with the GET request:", error)

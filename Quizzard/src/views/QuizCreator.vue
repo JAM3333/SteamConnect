@@ -32,6 +32,17 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
               accept=".txt,.pdf,.docx,.xlsx"
               ref="fileUpload"
             ></v-file-input>
+            <v-file-input
+              class="mt-4"
+              clearable
+              label="Image input"
+              variant="outlined"
+              single
+              show-size
+              name="fileo2"
+              accept=".png"
+              ref="imageUpload"
+            ></v-file-input>
           </v-card>
           <v-expansion-panels v-model="panel" style="min-width: 75vw">
             <v-expansion-panel expand title="Quiz Options"  color="primary">
@@ -269,7 +280,7 @@ export default {
             "Answer2",
             "Answer3",
             "Answer4"
-            ] // Always array with length = 4
+            ] // Always array with length = 4. Remove question if   
           }
         }, // ${self.sliderMultipleChoice} Multiple-choice-Question-Objects (questions with type=1 and 4 answers)
         {
@@ -286,36 +297,58 @@ export default {
       });
       if (completion.choices[0]) {
         self.returnedData = JSON.parse(completion.choices[0].message.content);
+        console.log(self.returnedData)
       }
       }
       await main();
     },
-async uploadFile() {
-  const formData = new FormData();
-  const files = this.$refs.fileUpload.files;
+    async uploadFile() {
+      if (this.$refs.fileUpload.files[0] != null){
+        const formData = new FormData();
+        const files = this.$refs.fileUpload.files;
 
-  for (let i = 0; i < files.length; i++) {
-    formData.append('file', files[i]);
-  }
+        for (let i = 0; i < files.length; i++) {
+          formData.append('file', files[i]);
+        }
 
-  const userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`);
-  const config = {
-    headers: {
-      'x-user-id': userId
-    }
-  };
+        const userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`);
+        const config = {
+          headers: {
+            'x-user-id': userId[0].UserID
+          }
+        };
 
-  await axios.post("http://"+import.meta.env.VITE_SERVER_IP+":"+import.meta.env.VITE_SERVER_PORT+"/api/upload", formData, config)
-    .then(response => {
-      console.log(JSON.stringify(response.data));
-      this.fileContentStr = JSON.stringify(response.data);
-    })
-    .catch(error => {
-      console.error('Fehler beim Hochladen der Datei:', error);
-    });
-},
-
-
+        await axios.post("http://"+import.meta.env.VITE_SERVER_IP+":"+import.meta.env.VITE_SERVER_PORT+"/api/upload", formData, config)
+          .then(response => {
+            console.log(JSON.stringify(response.data));
+            this.fileContentStr = JSON.stringify(response.data);
+          })
+          .catch(error => {
+            console.error('Fehler beim Hochladen der Datei:', error);
+          });
+        }
+    },
+    async uploadImage(insertData) {
+      const formData = new FormData();
+      const file = this.$refs.imageUpload.files[0];
+    
+      formData.append('file', file);
+    
+      const quizId = insertData;
+      const config = {
+        headers: {
+          'x-quiz-id': quizId,
+        }
+      };
+ 
+      await axios.post("http://"+import.meta.env.VITE_SERVER_IP+":"+import.meta.env.VITE_SERVER_PORT+"/api/images", formData, config)
+      .then(response => {
+        console.log("Fish"+JSON.stringify(response.data));
+      })
+      .catch(error => {
+        console.error('Fehler beim Hochladen des Bildes:', error);
+      });
+    },
 
     async GenerateQuiz(){
       this.loading = true;
@@ -342,11 +375,12 @@ async uploadFile() {
         this.loading = true;
         this.loadingMessage = "Creating Quiz...";
         var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
-        console.log(userId[0])
         var insertData = await AxiosGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES ('${userId[0].UserID}','${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${Number(this.publicValue)},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
+        await this.uploadImage(insertData.insertId);
         for (let i=0;i<this.returnedData.Questions.length;i++){
           this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
-          await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].QuestionType},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
+          var test = await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].QuestionType},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
+          console.log(test)
         } 
         this.loading = false
         this.$router.push({ name: 'Home'});
@@ -378,8 +412,9 @@ async uploadFile() {
         this.returnedData.AnswerRating = 0;
         this.SwitchPage();
         var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`);
-        var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID} and UserIDFK=`+userId+`;`);
-        if (sqlData[0].UserIDFK == userId){
+        var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID} and UserIDFK=`+userId[0].UserID+`;`);
+        console.log(sqlData[0].UserIDFK,userId[0].UserID)
+        if (sqlData[0].UserIDFK == userId[0].UserID){
           sqlData = sqlData[0]
           this.quizName = sqlData.QuizName;
           this.publicValue = Boolean(sqlData.Public.data[0]);

@@ -133,7 +133,7 @@ export default {
     },
     async updateAnswerRating(){
       if (!this.answerRatingNew){
-        this.answerRatingNew = 1;
+        this.answerRatingNew = 0;
       }
       await this.updateUI()
     },

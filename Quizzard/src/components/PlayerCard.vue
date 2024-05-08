@@ -8,7 +8,7 @@
   >
     <v-expansion-panel-title>
       <div  v-if="questionType==0">
-        <v-btn v-if="answerRating==0" value:0 disabled> Content </v-btn>
+      <v-btn v-if="answerRating==0" value:0 disabled> Content </v-btn>
         <v-btn v-else value:1 disabled> Exact </v-btn>
       </div>
       <v-btn v-else value:1 disabled> Multiple Choice </v-btn>
