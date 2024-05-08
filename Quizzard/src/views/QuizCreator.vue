@@ -286,7 +286,6 @@ export default {
       });
       if (completion.choices[0]) {
         self.returnedData = JSON.parse(completion.choices[0].message.content);
-        console.log(JSON.parse(completion.choices[0].message.content));
       }
       }
       await main();
@@ -324,7 +323,6 @@ async uploadFile() {
       this.returnedData.AnswerRating = parseInt(this.answerSelectedButton) 
       this.fileContentStr = JSON.stringify(this.fileContent);
       await this.uploadFile();
-      console.log(this.useAI)
       if (this.useAI){
         await this.APICall(); 
       } else {
@@ -343,15 +341,11 @@ async uploadFile() {
       if (this.mode==0){ // Create Quiz
         this.loading = true;
         this.loadingMessage = "Creating Quiz...";
-        console.log(this.returnedData.answerRating);
         var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
-        console.log(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES ('${userId[0].UserID}','${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${Number(this.publicValue)},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
-        var insertData = await AxiosGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${Number(this.publicValue)},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
-        console.log(insertData)
-        //var insertData = await this.ApiGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,QuizImage) VALUES (1,'${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
+        console.log(userId[0])
+        var insertData = await AxiosGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES ('${userId[0].UserID}','${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${Number(this.publicValue)},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
         for (let i=0;i<this.returnedData.Questions.length;i++){
           this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
-          console.log(i)
           await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].QuestionType},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
         } 
         this.loading = false
@@ -394,16 +388,13 @@ async uploadFile() {
           this.returnedData.AnswerRating = sqlData.AnswerRating;
           this.returnedData.QuizImage = sqlData.QuizImage;
           sqlData = await AxiosGet( `select * from Questions where QuizIDFK=`+this.quizID);
-          console.log(sqlData)
           for (let i=0;i<sqlData.length;i++){
            // let obj =  {  "Question": sqlData[i].Question,"QuestionType": sqlData[i].QuestionType,"AnswerRating":  sqlData[i].AnswerRating,"Answers": JSON.parse(sqlData[i].Answers)};
             this.returnedData.Questions[i] = new QuestionClass(sqlData[i].Question,sqlData[i].QuestionType,sqlData[i].AnswerRating,JSON.parse(sqlData[i].Answers));
           }
-          console.log(this.returnedData.Questions)
         } else {
           this.$router.push({ name: 'Home'});
         }
-        console.log(this.returnedData)
         this.update = true;
         this.update = false;
       } else {
