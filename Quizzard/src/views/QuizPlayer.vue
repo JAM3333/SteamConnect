@@ -115,8 +115,7 @@ export default {
         var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
         var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID} and UserIDFK=`+userId[0].UserID+`;`);
         if (sqlData) {
-          console.log(sqlData[0].UserIDFK, userId[0].UserID)
-          if (sqlData[0].UserIDFK == userId[0].UserID){
+          if (sqlData[0].UserIDFK == userId[0].UserID || sqlData[0].Public.data[0] == true){
             sqlData = sqlData[0]
             this.returnedData.QuizName = sqlData.QuizName;
             this.returnedData.QuizDifficulty = sqlData.QuizDifficulty;
