@@ -303,7 +303,7 @@ export default {
       await main();
     },
     async uploadFile() {
-      if (this.$refs.fileUpload.files[0] != null){
+      if (this.$refs.fileUpload.files.length != 0){
         const formData = new FormData();
         const files = this.$refs.fileUpload.files;
 
@@ -329,25 +329,27 @@ export default {
         }
     },
     async uploadImage(insertData) {
-      const formData = new FormData();
-      const file = this.$refs.imageUpload.files[0];
-    
-      formData.append('file', file);
-    
-      const quizId = insertData;
-      const config = {
-        headers: {
-          'x-quiz-id': quizId,
-        }
-      };
- 
-      await axios.post("http://"+import.meta.env.VITE_SERVER_IP+":"+import.meta.env.VITE_SERVER_PORT+"/api/images", formData, config)
-      .then(response => {
-        console.log("Fish"+JSON.stringify(response.data));
-      })
-      .catch(error => {
-        console.error('Fehler beim Hochladen des Bildes:', error);
-      });
+      if (this.$refs.fileUpload.files.length != 0){
+        const formData = new FormData();
+        const file = this.$refs.imageUpload.files[0];
+      
+        formData.append('file', file);
+      
+        const quizId = insertData;
+        const config = {
+          headers: {
+            'x-quiz-id': quizId,
+          }
+        };
+  
+        await axios.post("http://"+import.meta.env.VITE_SERVER_IP+":"+import.meta.env.VITE_SERVER_PORT+"/api/images", formData, config)
+        .then(response => {
+          console.log("Fish"+JSON.stringify(response.data));
+        })
+        .catch(error => {
+          console.error('Fehler beim Hochladen des Bildes:', error);
+        });
+      }  
     },
 
     async GenerateQuiz(){
@@ -358,6 +360,11 @@ export default {
       await this.uploadFile();
       if (this.useAI){
         await this.APICall(); 
+        for (let i=0;i<this.returnedData.Questions.length;i++){
+          if (this.returnedData.Questions[i].Answers.length != 4 && this.returnedData.Questions[i].Type == 1){
+            this.returnedData.Questions[i].Answers.length == 4
+          }
+        }
       } else {
         for (let i = 0;i<this.sliderMultipleChoice;i++){
           this.returnedData.Questions.push(new Question("Multiple-Choice-Question",1,0,["","","",""]))

@@ -1,13 +1,16 @@
 <script setup>
   import QuizCard from "../components/QuizCard.vue";
   import AxiosGet from "../JavaScript/AxiosGet.js";
+  import ChartComponent from "../components/ChartComponent.vue"
 </script>
 
 <template>
   <v-app>
+
     <SideBar></SideBar>
     <v-main id="Background" color="background" class="d-flex align-center justify-center ga-8 mt-20 flex-column " height="100vh">
       <div class="d-flex align-center justify-space-between">
+        <ChartComponent></ChartComponent>
         <v-card width="34vw"  id="BgTransparent" height="40vh" class="d-flex align-center flex-column mr-8 justify-space-between" elevation="12">
           <v-toolbar color="primary" class="text-h1" title="Create Quizzes!"></v-toolbar>
           <v-container class="d-flex align-center flex-row justify-space-between">
@@ -98,6 +101,7 @@ import SideBar from '../components/Navbar.vue'
 import axios from "axios";
 
 const apiUrl = "http://10.115.2.40:3004";
+
 
 export default {
   name: 'App',

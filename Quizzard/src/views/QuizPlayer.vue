@@ -4,6 +4,7 @@ import PlayerCard from "../components/PlayerCard.vue";
 import OpenAI from "openai";
 import QuestionClass from "../classes/QuestionClass.js";
 import AxiosGet from "../JavaScript/AxiosGet.js";
+import ChartComponent from "../components/ChartComponent.vue"
 </script>
 
 <template>
@@ -66,6 +67,8 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
           </v-card> 
           <v-container class="d-flex flex-column align-center justify-center flex-shrink-1"  >
             <h1 class="mb-1">{{ rating }} / {{this.returnedData.Questions.length}} Points</h1>
+            <ChartComponent></ChartComponent>
+
             <v-container width="fit-content" class="d-flex flex-row align-center justify-center">
               <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="SubmitAnswers" class="mt-4 mr-5 text-h3" @click="replay" height="auto" color="buttonsecond">
                 Replay Quiz
