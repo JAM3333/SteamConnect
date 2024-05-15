@@ -9,16 +9,20 @@ import Chart from 'chart.js'
   </template>
   
 <script>
-
-
 export default {
     name: 'ChartComponent',
+    props: {
+        labels: {
+            type: Array,
+            required: true,
+        },
+    },
     data() {
         return {
         planetChartData:  {
                                 type: "bar",
                                 data: {
-                                    labels: ["10.04", "11.04", "12.04", "13.04", "14.04"],
+                                    labels: labels,
                                     datasets: [
                                     {
                                         label: "Time",
@@ -27,13 +31,6 @@ export default {
                                         borderColor: "#36495d",
                                         borderWidth: 3
                                     },
-                                    {
-                                        label: "Points",
-                                        data: [5,6,8,7,9],
-                                        backgroundColor: "rgba(71, 183,132,.5)",
-                                        borderColor: "#47b784",
-                                        borderWidth: 3
-                                    }
                                     ]
                                 },
                                 options: {
@@ -54,8 +51,9 @@ export default {
         }
     },
     mounted() {
+        console.log(this.labels)
         const ctx = document.getElementById('planet-chart');
         new Chart(ctx, this.planetChartData);
     }
 }
-  </script>
+</script>

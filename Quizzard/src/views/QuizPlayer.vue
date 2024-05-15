@@ -67,7 +67,7 @@ import ChartComponent from "../components/ChartComponent.vue"
           </v-card> 
           <v-container class="d-flex flex-column align-center justify-center flex-shrink-1"  >
             <h1 class="mb-1">{{ rating }} / {{this.returnedData.Questions.length}} Points</h1>
-            <ChartComponent></ChartComponent>
+            <ChartComponent :labels="['2','2','2']"></ChartComponent>
 
             <v-container width="fit-content" class="d-flex flex-row align-center justify-center">
               <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="SubmitAnswers" class="mt-4 mr-5 text-h3" @click="replay" height="auto" color="buttonsecond">
@@ -152,13 +152,13 @@ export default {
     },
     timer() {
       this.playing = 1;
-      console.log("timer")
+      this.playtime = 0;
       const startTime = Date.now();
 
+      const self = this
       let interval = setInterval(function() {
-        this.playtime = Date.now() - startTime ;
-        this.playtime = (this.playtime / 1000).toFixed(1)
-        console.log()
+        self.playtime = Date.now() - startTime ;
+        self.playtime = (self.playtime / 1000).toFixed(1)
       }, 100);
     },
 
@@ -202,6 +202,8 @@ export default {
         } 
       })
       this.playing = 2
+      var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
+      await AxiosGet(`insert into Plays (UserIDFK,QuizIDFK,Points,MaxPoints,Playtime,Playdate) VALUES (${userId[0].UserID},${this.quizID},${this.rating},${this.returnedData.Questions.length},${this.playtime},'${new Date().toISOString().slice(0, 19).replace('T', ' ')}');`)
     },
     async ReturnAnswerData(index,playerAnswer){
       this.returnedData.Questions[index].playerAnswer = playerAnswer;
