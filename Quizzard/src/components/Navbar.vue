@@ -40,7 +40,7 @@ import axios from 'axios';
   },
   methods: {
     async startupFunc() {
-      if (this.Token) {
+      if (this.Token != "" && this.Token != null) {
         console.log(localStorage.getItem('token'))
         await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/loginrequest", {Token: this.Token})
               .then((response) => {
@@ -62,7 +62,7 @@ import axios from 'axios';
     logout() {
       localStorage.setItem('token', '')
       this.loggedIn = false;
-      this.$router.push({path: '/home'})
+      this.$router.push({name: 'Home'})
     },
 },
 };

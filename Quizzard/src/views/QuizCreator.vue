@@ -414,35 +414,40 @@ export default {
       this.quizName = this.returnedData.QuizName;          
     },
     async Initialize(){
-      if(this.$route.params.quizID){
-        this.mode = 1;
-        this.quizID = this.$route.params.quizID;
-        this.returnedData.AnswerRating = 0;
-        this.SwitchPage();
-        var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`);
-        var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID} and UserIDFK=`+userId[0].UserID+`;`);
-        console.log(sqlData[0].UserIDFK,userId[0].UserID)
-        if (sqlData[0].UserIDFK == userId[0].UserID){
-          sqlData = sqlData[0]
-          this.quizName = sqlData.QuizName;
-          this.publicValue = Boolean(sqlData.Public.data[0]);
-          this.returnedData.QuizName = sqlData.QuizName;
-          this.returnedData.QuizDifficulty = sqlData.QuizDifficulty;
-          this.returnedData.AnswerRating = sqlData.AnswerRating;
-          this.returnedData.QuizImage = sqlData.QuizImage;
-          sqlData = await AxiosGet( `select * from Questions where QuizIDFK=`+this.quizID);
-          for (let i=0;i<sqlData.length;i++){
-           // let obj =  {  "Question": sqlData[i].Question,"QuestionType": sqlData[i].QuestionType,"AnswerRating":  sqlData[i].AnswerRating,"Answers": JSON.parse(sqlData[i].Answers)};
-            this.returnedData.Questions[i] = new QuestionClass(sqlData[i].Question,sqlData[i].QuestionType,sqlData[i].AnswerRating,JSON.parse(sqlData[i].Answers));
-          }
-        } else {
-          this.$router.push({ name: 'Home'});
-        }
-        this.update = true;
-        this.update = false;
+      if (localStorage.getItem('token') == "" || localStorage.getItem('token') == null) {
+        this.$router.push({ name: 'Login'});
+        return;
       } else {
-        this.mode = 0;
-      };
+        if(this.$route.params.quizID){
+          this.mode = 1;
+          this.quizID = this.$route.params.quizID;
+          this.returnedData.AnswerRating = 0;
+          this.SwitchPage();
+          var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`);
+          var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID} and UserIDFK=`+userId[0].UserID+`;`);
+          console.log(sqlData[0].UserIDFK,userId[0].UserID)
+          if (sqlData[0].UserIDFK == userId[0].UserID){
+            sqlData = sqlData[0]
+            this.quizName = sqlData.QuizName;
+            this.publicValue = Boolean(sqlData.Public.data[0]);
+            this.returnedData.QuizName = sqlData.QuizName;
+            this.returnedData.QuizDifficulty = sqlData.QuizDifficulty;
+            this.returnedData.AnswerRating = sqlData.AnswerRating;
+            this.returnedData.QuizImage = sqlData.QuizImage;
+            sqlData = await AxiosGet( `select * from Questions where QuizIDFK=`+this.quizID);
+            for (let i=0;i<sqlData.length;i++){
+            // let obj =  {  "Question": sqlData[i].Question,"QuestionType": sqlData[i].QuestionType,"AnswerRating":  sqlData[i].AnswerRating,"Answers": JSON.parse(sqlData[i].Answers)};
+              this.returnedData.Questions[i] = new QuestionClass(sqlData[i].Question,sqlData[i].QuestionType,sqlData[i].AnswerRating,JSON.parse(sqlData[i].Answers));
+            }
+          } else {
+            this.$router.push({ name: 'Home'});
+          }
+          this.update = true;
+          this.update = false;
+        } else {
+          this.mode = 0;
+        };
+      }
     },
     async UpdateQuestion(index,question,answerRating,questionType){
       this.returnedData.Questions[index].Question = question;

@@ -1,7 +1,6 @@
 <script setup>
   import QuizCard from "../components/QuizCard.vue";
   import AxiosGet from "../JavaScript/AxiosGet.js";
-  import ChartComponent from "../components/ChartComponent.vue"
 </script>
 
 <template>
@@ -10,7 +9,6 @@
     <SideBar></SideBar>
     <v-main id="Background" color="background" class="d-flex align-center justify-center ga-8 mt-20 flex-column " height="100vh">
       <div class="d-flex align-center justify-space-between">
-        <ChartComponent></ChartComponent>
         <v-card width="34vw"  id="BgTransparent" height="40vh" class="d-flex align-center flex-column mr-8 justify-space-between" elevation="12">
           <v-toolbar color="primary" class="text-h1" title="Create Quizzes!"></v-toolbar>
           <v-container class="d-flex align-center flex-row justify-space-between">
@@ -114,15 +112,17 @@ export default {
   }),
   methods: {
     async Initialize(){
-      var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
-      if (userId[0]){
-        axios.get(`${apiUrl}/getQuizzes?format=json`,{params: {userid: userId[0].UserID}}).then((response) => {     //{sqlQuery: `select QuizName,QuizImage from Quizzes where UserIDFK=1`}
-        //response.data.QuizImage = apiUrl+response.data.QuizImage
-        this.quizData = response.data;
-      })
-      .catch((error) => {
-        console.error("Error with the GET request:", error)
-      })
+      if (localStorage.getItem('token') != "" && localStorage.getItem('token') != null) {
+        var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
+        if (userId[0]){
+          axios.get(`${apiUrl}/getQuizzes?format=json`,{params: {userid: userId[0].UserID}}).then((response) => {     //{sqlQuery: `select QuizName,QuizImage from Quizzes where UserIDFK=1`}
+          //response.data.QuizImage = apiUrl+response.data.QuizImage
+          this.quizData = response.data;
+          })
+          .catch((error) => {
+            console.error("Error with the GET request:", error)
+          })
+        }
       }
     },
   }

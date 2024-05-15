@@ -81,11 +81,7 @@ export default {
   },
   data: () => ({
     search: '',
-    quizData: [{
-      QuizName: "Default",
-      QuizID: 1,
-      QuizImage:"https://th.bing.com/th/id/OIP.GPFEY6kfgxbsja6gmrW6rwHaE7?rs=1&pid=ImgDetMain"
-    }], 
+    quizData: [], 
     userid: 1,
   }),
   methods: {
