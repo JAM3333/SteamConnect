@@ -266,7 +266,7 @@ export default {
       async function main() {
         self.loadingMessage = "Sending prompt...";
         const completion = await openai.chat.completions.create({
-          messages: [{ role: "system", content: `Generate a quiz from the attached content in brackets and the following instructions: ${self.customInstructions}. Content: ${self.fileContentStr}.Create exactly ${self.sliderText} Text-Questions and ${self.sliderMultipleChoice} Multiple-choice-questions with a difficulty of ${self.difSelectedButton} using the following json format (Example):   {"QuizName": "Name",
+          messages: [{ role: "system", content: `Generate a quiz from the attached content in brackets and the following instructions: ${self.customInstructions}. Content: ${self.fileContentStr}.Create exactly ${self.sliderText} Text-Questions and ${self.sliderMultipleChoice} Multiple-choice-questions with a difficulty of ${self.difSelectedButton} using the following json format (Example). Only return this format:   {"QuizName": "Name",
       "QuizDifficulty": 0, // easy=0; medium=1; difficult=2
       "AnswerRating": ${self.answerSelectedButton},
       "QuizImage": "image.png",
@@ -288,14 +288,16 @@ export default {
           "QuestionType": 0, // Text = 0
           "AnswerRating": ${self.answerSelectedButton}, // always use this with Text-Questions
           "Answers": [
-            "Answer" 
+            "Question Answer" 
           ] // Always array with length = 1
         }, // ${self.sliderText} Text-Question-Objects (questions with type=0 and 1 answer)
       ] // It is crucial to have the right ammount of Multiple Choice and Text Questions as requested (${self.sliderMultipleChoice} + ${self.sliderText})
     }`  }],
-          model: "gpt-3.5-turbo",
+          model:"gpt-3.5-turbo",//model: "gpt-4o",
+          //response_format: {"type": "json_object"},
       });
       if (completion.choices[0]) {
+        console.log(completion.choices[0].message.content)
         self.returnedData = JSON.parse(completion.choices[0].message.content);
         console.log(self.returnedData)
       }
@@ -329,7 +331,7 @@ export default {
         }
     },
     async uploadImage(insertData) {
-      if (this.$refs.fileUpload.files.length != 0){
+      if (this.$refs.imageUpload.files.length != 0){
         const formData = new FormData();
         const file = this.$refs.imageUpload.files[0];
       
@@ -382,13 +384,12 @@ export default {
         this.loading = true;
         this.loadingMessage = "Creating Quiz...";
         var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
-        var insertData = await AxiosGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES ('${userId[0].UserID}','${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${Number(this.publicValue)},'https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0');`)
+        var insertData = await AxiosGet(`insert into Quizzes (UserIDFK,QuizName,QuizDifficulty,AnswerRating,Public,QuizImage) VALUES ('${userId[0].UserID}','${this.returnedData.QuizName}',${this.returnedData.QuizDifficulty},${this.returnedData.AnswerRating},${Number(this.publicValue)},'');`)
         await this.uploadImage(insertData.insertId);
         for (let i=0;i<this.returnedData.Questions.length;i++){
           this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
-          var test = await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].QuestionType},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
-          console.log("Inserted line")
-          console.log(test)
+          this.returnedData.Questions[i].Question = this.returnedData.Questions[i].Question.replace(/'/g, "`");
+          await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].QuestionType},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
         } 
         this.loading = false
         this.$router.push({ name: 'Home'});
