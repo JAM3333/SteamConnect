@@ -116,10 +116,10 @@ export default {
         this.quizID = this.$route.params.quizID;
         this.returnedData.AnswerRating = 0;
         var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
-        var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID} and UserIDFK=`+userId[0].UserID+`;`);
+        var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID};`);
         if (sqlData) {
-          if (sqlData[0].UserIDFK == userId[0].UserID || sqlData[0].Public.data[0] == true){
-            sqlData = sqlData[0]
+          sqlData = sqlData[0]
+          if (sqlData.UserIDFK == userId[0].UserID || sqlData.Public.data[0] == true){
             this.returnedData.QuizName = sqlData.QuizName;
             this.returnedData.QuizDifficulty = sqlData.QuizDifficulty;
             this.returnedData.AnswerRating = sqlData.AnswerRating;

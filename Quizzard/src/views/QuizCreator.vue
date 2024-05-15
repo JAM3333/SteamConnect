@@ -387,6 +387,7 @@ export default {
         for (let i=0;i<this.returnedData.Questions.length;i++){
           this.loadingMessage = "Creating Question "+(parseInt(i)+1)+"...";
           var test = await AxiosGet(`insert into Questions (QuizIDFK,Question,QuestionType,AnswerRating,Answers) VALUES (${insertData.insertId},'${this.returnedData.Questions[i].Question}',${this.returnedData.Questions[i].QuestionType},${this.returnedData.Questions[i].AnswerRating},'${JSON.stringify(this.returnedData.Questions[i].Answers)}');`)
+          console.log("Inserted line")
           console.log(test)
         } 
         this.loading = false

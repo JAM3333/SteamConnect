@@ -10,7 +10,8 @@
     class="d-flex align-center flex-column ml-8"
     elevation="12"
   >
-    <v-img width="15vw" cover :src="'http://10.115.2.40:3004'+image"></v-img>
+    <v-img width="15vw" height="25vh" cover v-if="image==''" src="https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0"></v-img>
+    <v-img width="15vw" height="25vh" cover v-else :src="'http://10.115.2.40:3004'+image"></v-img>
     <v-toolbar color="primary" class="text-h1" :title="name">
       <v-btn icon="mdi-play" @click="player"></v-btn>
       <v-menu location="end" v-if="edit==true">

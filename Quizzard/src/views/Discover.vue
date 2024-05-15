@@ -8,7 +8,7 @@
     <SideBar></SideBar>
     <v-main color="background" class="d-flex align-center justify-top ga-8 mt-20 flex-column" height="100vh">
         <v-card width="70vw" class="mt-6" id="BgTransparent" height="95vh" elevation="12">
-          <v-data-iterator :items="quizData" :items-per-page="12" :search="search" >
+          <v-data-iterator :items="quizData" :items-per-page="8" :search="search" >
             <template v-slot:header>
               <v-toolbar color="primary" title="Discover" >
                 <v-text-field
