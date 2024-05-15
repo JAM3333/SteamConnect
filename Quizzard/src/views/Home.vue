@@ -98,7 +98,7 @@
 import SideBar from '../components/Navbar.vue'
 import axios from "axios";
 
-const apiUrl = "http://10.115.2.40:3004";
+const apiUrl = "http://"+import.meta.env.VITE_SERVER_IP+":"+import.meta.env.VITE_SERVER_PORT;
 
 
 export default {
