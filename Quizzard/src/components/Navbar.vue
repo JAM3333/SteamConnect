@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer permanent expand-on-hover rail style="position: fixed;">
     <v-list density="compact" nav>
-      <v-list-item :to="{path: '/home'}" prepend-icon="mdi-alpha-q" title= "Qizzard"></v-list-item>
+      <v-list-item :to="{path: '/home'}" prepend-icon="mdi-alpha-q" title= "Quizzard"></v-list-item>
     </v-list>
 
     <v-divider></v-divider>
