@@ -67,7 +67,7 @@ import ChartComponent from "../components/ChartComponent.vue"
           </v-card> 
           <v-container class="d-flex flex-column align-center justify-center flex-shrink-1"  >
             <h1 class="mb-1">{{ rating }} / {{this.returnedData.Questions.length}} Points</h1>
-            <ChartComponent :labels="['2','2','2']"></ChartComponent>
+            <ChartComponent :pData="playData"></ChartComponent>
 
             <v-container width="fit-content" class="d-flex flex-row align-center justify-center">
               <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="SubmitAnswers" class="mt-4 mr-5 text-h3" @click="replay" height="auto" color="buttonsecond">
@@ -109,6 +109,7 @@ export default {
       "QuizImage": "image.png",
       "Questions": []
     },
+    playData: {},
   }),
   methods: { 
     async Initialize(){
@@ -204,6 +205,7 @@ export default {
       this.playing = 2
       var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
       await AxiosGet(`insert into Plays (UserIDFK,QuizIDFK,Points,MaxPoints,Playtime,Playdate) VALUES (${userId[0].UserID},${this.quizID},${this.rating},${this.returnedData.Questions.length},${this.playtime},'${new Date().toISOString().slice(0, 19).replace('T', ' ')}');`)
+      this.playData = await AxiosGet(`select Points,MaxPoints,Playtime,Playdate from Plays where UserIDFK = ${userId[0].UserID} and QuizIDFK = ${this.quizID};`)
     },
     async ReturnAnswerData(index,playerAnswer){
       this.returnedData.Questions[index].playerAnswer = playerAnswer;
