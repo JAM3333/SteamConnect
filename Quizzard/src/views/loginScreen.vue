@@ -1,7 +1,10 @@
 <template>
 <v-app>
-    <v-main id="Background" class="d-flex align-center justify-center ga-8 mt-20 flex-column">
-      <v-alert id="error" v-if="generalError" type="error">{{ generalError }}</v-alert>
+
+    <v-main id="Background" class="d-flex ga-8 mt-20 flex-column">
+                <v-btn @click="pageBack()" width="17vw" >Back</v-btn>
+                <div width="100vw" height="100vh" class="d-flex ga-8 mt-20 flex-column align-center justify-center">
+ <v-alert id="error" v-if="generalError" type="error">{{ generalError }}</v-alert>
             <v-card width="34vw" color="secondary" height="400px" class="d-flex align-center flex-column mr-16" elevation="12">
                 <v-btn-toggle v-model="toggle_one" mandatory width="34vw">
                     <v-btn @click="pageToLogin()" width="17vw">Login</v-btn>
@@ -74,6 +77,8 @@
                   <v-btn type="submit" class="mt-4" color="primary" value="log in" width="20vw" >Sign Up</v-btn>
                </form>
             </v-card>
+                </div>
+     
     </v-main>
 </v-app>
 
@@ -204,6 +209,9 @@ import { generateCodeFrame } from "vue/compiler-sfc";
       pageToSignup() {
          this.currentPageIsLogin = false;
          this.currentPageIsSignup = true;
+      },
+      pageBack(){
+         this.$router.push({ name: 'Home'});
       },
       pageToLogin() {
          this.currentPageIsLogin = true;
