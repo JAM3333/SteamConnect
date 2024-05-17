@@ -34,6 +34,7 @@ export default {
       this.pData.forEach(data => {
         chartLabels.push(data.Playdate.toString().substring(0,10));
         chartData.push(data.Points);
+        //chartData.push(data.Playtime);
       });
 
       new Chart(ctx, {
@@ -53,13 +54,25 @@ export default {
             yAxes: [{
               ticks: {
                 suggestedMax: this.pData[0].MaxPoints,
-                beginAtZero: true
+                beginAtZero: true,
+                stepSize: 1,
               }
             }]
-          }
+          },
+          responsive: true,
+          maintainAspectRatio: false,
+          height: 1000,
         }
       });
     }
   }
 };
 </script>
+
+
+<style scoped>
+#myChart {
+  height: 400px;
+  width: 600px;
+}
+</style>

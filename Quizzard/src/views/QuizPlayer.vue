@@ -15,6 +15,7 @@ import ChartComponent from "../components/ChartComponent.vue"
         <v-toolbar color="primary" style="text-align: center">  
           <v-toolbar-title>
             {{ returnedData.QuizName }}
+            <p>{{ playtime }}</p>
           </v-toolbar-title>
         </v-toolbar> 
         <v-container v-if="playing==0" width="75vw" class="d-flex align-center flex-column">
@@ -158,8 +159,12 @@ export default {
 
       const self = this
       let interval = setInterval(function() {
-        self.playtime = Date.now() - startTime ;
-        self.playtime = (self.playtime / 1000).toFixed(1)
+        if(self.playing == 1){
+          self.playtime = Date.now() - startTime ;
+          self.playtime = (self.playtime / 1000).toFixed(1)
+        } else {
+          return
+        }
       }, 100);
     },
 
@@ -205,7 +210,7 @@ export default {
       this.playing = 2
       var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
       await AxiosGet(`insert into Plays (UserIDFK,QuizIDFK,Points,MaxPoints,Playtime,Playdate) VALUES (${userId[0].UserID},${this.quizID},${this.rating},${this.returnedData.Questions.length},${this.playtime},'${new Date().toISOString().slice(0, 19).replace('T', ' ')}');`)
-      this.playData = await AxiosGet(`select Points,MaxPoints,Playtime,Playdate from Plays where UserIDFK = ${userId[0].UserID} and QuizIDFK = ${this.quizID};`)
+      this.playData = await AxiosGet(`select Points,MaxPoints,Playtime,Playdate from Plays where UserIDFK = ${userId[0].UserID} and QuizIDFK = ${this.quizID} limit 10;`)
     },
     async ReturnAnswerData(index,playerAnswer){
       this.returnedData.Questions[index].playerAnswer = playerAnswer;
