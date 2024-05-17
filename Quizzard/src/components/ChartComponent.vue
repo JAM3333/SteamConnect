@@ -32,7 +32,7 @@ export default {
       const chartData = [];
 
       this.pData.forEach(data => {
-        chartLabels.push(data.Playdate);
+        chartLabels.push(data.Playdate.toString().substring(0,10));
         chartData.push(data.Points);
       });
 

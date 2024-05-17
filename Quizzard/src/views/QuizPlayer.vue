@@ -70,10 +70,10 @@ import ChartComponent from "../components/ChartComponent.vue"
             <ChartComponent :pData="playData"></ChartComponent>
 
             <v-container width="fit-content" class="d-flex flex-row align-center justify-center">
-              <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="SubmitAnswers" class="mt-4 mr-5 text-h3" @click="replay" height="auto" color="buttonsecond">
+              <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="replay" class="mt-4 mr-5 text-h3" height="auto" color="buttonsecond">
                 Replay Quiz
               </v-btn>
-              <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="SubmitAnswers" class="mt-4  text-h3" @click="home" height="auto" color="button">
+              <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="home" class="mt-4  text-h3" height="auto" color="button">
                 Home
               </v-btn>
             </v-container>
