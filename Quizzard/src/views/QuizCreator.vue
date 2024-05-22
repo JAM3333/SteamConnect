@@ -28,8 +28,7 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
               variant="outlined"
               multiple
               show-size
-              name="fileo"
-              accept=".txt,.pdf,.docx,.xlsx"
+              accept=".txt,.pdf,.docx,.xlsx,.pptx"
               ref="fileUpload"
             ></v-file-input>
             <v-file-input
@@ -39,7 +38,6 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
               variant="outlined"
               single
               show-size
-              name="fileo2"
               accept=".png"
               ref="imageUpload"
             ></v-file-input>
