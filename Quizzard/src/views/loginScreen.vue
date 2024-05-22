@@ -1,9 +1,10 @@
 <template>
+      
 <v-app>
-
-    <v-main id="Background" class="d-flex ga-8 mt-20 flex-column">
-                <v-btn @click="pageBack()" width="17vw" >Back</v-btn>
-                <div width="100vw" height="100vh" class="d-flex ga-8 mt-20 flex-column align-center justify-center">
+   <div class="d-flex ga-8 mt-20 flex-column" id="Background">
+      <v-btn :to="{path: '/home'}" density="comfortable" icon="mdi-arrow-left-bold-outline" size="x-large" style="margin: 10px 10px;"></v-btn>
+   </div>
+    <v-main id="Background" class="d-flex align-center justify-center ga-8 mt-20 flex-column">
  <v-alert id="error" v-if="generalError" type="error">{{ generalError }}</v-alert>
             <v-card width="34vw" color="secondary" height="400px" class="d-flex align-center flex-column mr-16" elevation="12">
                 <v-btn-toggle v-model="toggle_one" mandatory width="34vw">
@@ -77,7 +78,6 @@
                   <v-btn type="submit" class="mt-4" color="primary" value="log in" width="20vw" >Sign Up</v-btn>
                </form>
             </v-card>
-                </div>
      
     </v-main>
 </v-app>
