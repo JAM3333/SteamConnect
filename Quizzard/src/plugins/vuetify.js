@@ -18,6 +18,7 @@ const customTheme = {
     secondary: '#3E3E3E',
     third: '#393939',
     button: '#07B5FF',
+    buttonGreen: '#008000',
     buttonSecond: '#41455D',
     buttonThird: `#933`,
     backgroundMain: '#4D4D4D',

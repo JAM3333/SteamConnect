@@ -68,8 +68,7 @@ import ChartComponent from "../components/ChartComponent.vue"
           </v-card> 
           <v-container class="d-flex flex-column align-center justify-center flex-shrink-1"  >
             <h1 class="mb-1">{{ rating }} / {{this.returnedData.Questions.length}} Points</h1>
-            <ChartComponent :pData="playData"></ChartComponent>
-
+            <ChartComponent :pData="playData" :plotEnabled="pEnabled"></ChartComponent>
             <v-container width="fit-content" class="d-flex flex-row align-center justify-center">
               <v-btn value="submit" :disabled="loading" :loading="loading" v-on:click="replay" class="mt-4 mr-5 text-h3" height="auto" color="buttonsecond">
                 Replay Quiz
@@ -100,6 +99,7 @@ export default {
     playtime:0,
     loading: false,
     update: false,
+    pEnabled: true,
     playing: 0,
     quizID: -1,
     rating: 0,
@@ -178,7 +178,7 @@ export default {
           } else {
             question.Points = 0
           }
-          question.playerAnswer = question.AnswerRating
+          //question.playerAnswer = question.AnswerRating
         } else {
           question.Points = 0
           if(question.AnswerRating == 0){ // content
@@ -208,9 +208,13 @@ export default {
         } 
       })
       this.playing = 2
-      var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
-      await AxiosGet(`insert into Plays (UserIDFK,QuizIDFK,Points,MaxPoints,Playtime,Playdate) VALUES (${userId[0].UserID},${this.quizID},${this.rating},${this.returnedData.Questions.length},${this.playtime},'${new Date().toISOString().slice(0, 19).replace('T', ' ')}');`)
-      this.playData = await AxiosGet(`select Points,MaxPoints,Playtime,Playdate from Plays where UserIDFK = ${userId[0].UserID} and QuizIDFK = ${this.quizID} limit 10;`)
+      if (localStorage.getItem("token") != ""){
+        var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
+        await AxiosGet(`insert into Plays (UserIDFK,QuizIDFK,Points,MaxPoints,Playtime,Playdate) VALUES (${userId[0].UserID},${this.quizID},${this.rating},${this.returnedData.Questions.length},${this.playtime},'${new Date().toISOString().slice(0, 19).replace('T', ' ')}');`)
+        this.playData = await AxiosGet(`select Points,MaxPoints,Playtime,Playdate from Plays where UserIDFK = ${userId[0].UserID} and QuizIDFK = ${this.quizID} ORDER BY Playdate DESC limit 10;`)
+      } else {
+        this.pEnabled = false
+      }
     },
     async ReturnAnswerData(index,playerAnswer){
       this.returnedData.Questions[index].playerAnswer = playerAnswer;
