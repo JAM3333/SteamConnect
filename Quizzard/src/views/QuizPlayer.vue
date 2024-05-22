@@ -121,7 +121,7 @@ export default {
         var sqlData = await AxiosGet(`select * from Quizzes where QuizID=${this.quizID};`);
         if (sqlData) {
           sqlData = sqlData[0]
-          if (sqlData.UserIDFK == userId[0].UserID || sqlData.Public.data[0] == true){
+          if (sqlData.Public.data[0] == true || sqlData.UserIDFK == userId[0].UserID){
             this.returnedData.QuizName = sqlData.QuizName;
             this.returnedData.QuizDifficulty = sqlData.QuizDifficulty;
             this.returnedData.AnswerRating = sqlData.AnswerRating;
