@@ -170,7 +170,8 @@ export default {
 
     async SubmitAnswers(){
       const self = this;
-      this.returnedData.Questions.forEach(async function(question){
+      this.playing = 3
+      for (const question of this.returnedData.Questions) {
         if(question.QuestionType == 1){
           if(question.AnswerRating==question.playerAnswer){
             self.rating += 1
@@ -197,6 +198,7 @@ export default {
                 }
               }
               await main();
+              console.log("done")
             }
           } else { // Exact
             let plrAnswer = question.playerAnswer
@@ -206,8 +208,9 @@ export default {
             }
           }
         } 
-      })
+      }
       this.playing = 2
+      console.log("new page")
       if (localStorage.getItem("token") != ""){
         var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
         await AxiosGet(`insert into Plays (UserIDFK,QuizIDFK,Points,MaxPoints,Playtime,Playdate) VALUES (${userId[0].UserID},${this.quizID},${this.rating},${this.returnedData.Questions.length},${this.playtime},'${new Date().toISOString().slice(0, 19).replace('T', ' ')}');`)

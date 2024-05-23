@@ -33,6 +33,7 @@ export default {
       const chartLabels = [];
       const chartData = [];
 
+      this.pData.reverse()
       this.pData.forEach(data => {
         chartLabels.push(data.Playdate.toString().substring(0,10));
         chartData.push(data.Points);
