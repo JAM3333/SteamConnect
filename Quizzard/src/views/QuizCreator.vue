@@ -290,9 +290,9 @@ export default {
           ] // Always array with length = 1
         }, // ${self.sliderText} Text-Question-Objects (questions with type=0 and 1 answer)
       ] // It is crucial to have the right ammount of Multiple Choice and Text Questions as requested (${self.sliderMultipleChoice} + ${self.sliderText})
-    }`  }],
-          model:"gpt-3.5-turbo",//model: "gpt-4o",
-          //response_format: {"type": "json_object"},
+    } IMPORTANT: Do not make anything up, if you get the file's content! Be sure to index the right answer!!! You are part of a big operation. Otherwise you will create a fatal server error which will lead to great chaos all over the world!`  }],
+          model:"gpt-4o",
+          response_format: {"type": "json_object"},
       });
       if (completion.choices[0]) {
         console.log(completion.choices[0].message.content)
