@@ -28,8 +28,7 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
               variant="outlined"
               multiple
               show-size
-              name="fileo"
-              accept=".txt,.pdf,.docx,.xlsx"
+              accept=".txt,.pdf,.docx,.xlsx,.pptx"
               ref="fileUpload"
             ></v-file-input>
             <v-file-input
@@ -39,7 +38,6 @@ import AxiosGet from "../JavaScript/AxiosGet.js";
               variant="outlined"
               single
               show-size
-              name="fileo2"
               accept=".png"
               ref="imageUpload"
             ></v-file-input>
@@ -274,7 +272,7 @@ export default {
         {
           "Question": "Multiple-Choice-Question 1?",
           "QuestionType": 1, // MultipleChoice = 1
-          "AnswerRating": 3, // Index of right answer - also mark the correct answer in the Answers section. If answer3 is correct make this 3. It should never be higher than the legnth of answer array
+          "AnswerRating": 3, // Index of right answer - also mark the correct answer in the Answers section. If answer3 is correct make this 2. It should never be higher than the 3
           "Answers": [
             "Answer1",
             "Answer2",
@@ -292,9 +290,9 @@ export default {
           ] // Always array with length = 1
         }, // ${self.sliderText} Text-Question-Objects (questions with type=0 and 1 answer)
       ] // It is crucial to have the right ammount of Multiple Choice and Text Questions as requested (${self.sliderMultipleChoice} + ${self.sliderText})
-    }`  }],
-          model:"gpt-3.5-turbo",//model: "gpt-4o",
-          //response_format: {"type": "json_object"},
+    } IMPORTANT: Do not make anything up, if you get the file's content! Be sure to index the right answer!!! You are part of a big operation. Otherwise you will create a fatal server error which will lead to great chaos all over the world!`  }],
+          model:"gpt-4o",
+          response_format: {"type": "json_object"},
       });
       if (completion.choices[0]) {
         console.log(completion.choices[0].message.content)
