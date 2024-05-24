@@ -104,6 +104,7 @@ export default {
     async deleteQuiz() {
       this.loading = true;
       await AxiosGet(`delete from Questions where QuizIDFK=${this.id};`);
+      await AxiosGet(`delete from Plays where QuizIDFK=${this.id};`);
       var userId = await AxiosGet(`select UserID from Users where Token='`+localStorage.getItem('token')+`';`)
       await AxiosGet(`delete from Quizzes where QuizID=${this.id} and UserIDFK=${userId[0].UserID};`);
       this.initFunction();
