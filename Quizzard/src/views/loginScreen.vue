@@ -187,24 +187,26 @@ import { generateCodeFrame } from "vue/compiler-sfc";
       },
       async signup() {
          const signupData = {
-               Email: this.formSignup.email,
-               Username: this.formSignup.username,
-               Password: this.formSignup.password
-            };
+            Email: this.formSignup.email,
+            Username: this.formSignup.username,
+            Password: this.formSignup.password
+         };
 
-            console.log(signupData);
+         console.log(signupData);
 
-            await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/signup", signupData)
-            .then((response) => {
-               console.log("answer from server:", response.data);
-               let token = response.data;
-               localStorage.setItem('token', token);
-               this.$router.push({ path: '/home' });
-            })
-            .catch((error) => {
-               console.log("error recieved");
-               console.error("Error with the GET request:", error);
-            });
+         await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/signup", signupData)
+         .then((response) => {
+            console.log("answer from server:", response.data);
+            if (response.status === 200) {
+            alert("Signup successful! Please check your email to verify your account.");
+            this.pageToLogin(); // Switch to the login page
+            }
+         })
+         .catch((error) => {
+            console.log("error received");
+            console.error("Error with the POST request:", error);
+            this.generalError = "Signup failed. Please try again.";
+         });
       },
       pageToSignup() {
          this.currentPageIsLogin = false;
