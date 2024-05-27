@@ -37,6 +37,11 @@ const routes = [
         name: 'Login',
         component: () => import('@/views/loginScreen.vue'),
       },
+      {
+        path: '/verify-email',
+        name: 'VerifyEmail',
+        component: () => import('@/views/VerifyEmail.vue')
+      },
     ],
   },
 ]

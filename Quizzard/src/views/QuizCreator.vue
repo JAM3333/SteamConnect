@@ -272,7 +272,7 @@ export default {
         {
           "Question": "Multiple-Choice-Question 1?",
           "QuestionType": 1, // MultipleChoice = 1
-          "AnswerRating": 3, // Index of right answer - also mark the correct answer in the Answers section. If answer3 is correct make this 3. It should never be higher than the legnth of answer array
+          "AnswerRating": 3, // Index of right answer - also mark the correct answer in the Answers section. If answer3 is correct make this 2. It should never be higher than the 3
           "Answers": [
             "Answer1",
             "Answer2",
